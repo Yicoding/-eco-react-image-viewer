@@ -1,16 +1,22 @@
-# react-image-viewer
+---
+title: 快速上手
+order: 0
+group:
+  title: 快速上手
+nav:
+  title: 指南
+  path: /docs
+---
 
-[![npm][npm]][npm-url] ![GitHub](https://shopmushi.com/configFile/assets/mit.svg)
+# 快速上手
 
-基于`react`的图片预览组件，兼容 PC、移动端
-
-[查看文档和示例][site]
+[![npm][npm]][npm-url] ![GitHub](@/assets/svg/mit.svg)
 
 ## 使用
 
 ### npm 或 yarn 安装
 
-```shell
+```bash
 npm install @eco/react-image-viewer
 # or
 yarn add @eco/react-image-viewer
@@ -42,4 +48,4 @@ export default () => {
 ```
 
 [npm]: https://img.shields.io/npm/v/react-image-viewer.svg
-[site]: https://yicoding.github.io/react-image-viewer
+[npm-url]: https://www.npmjs.com/package/react-image-viewer

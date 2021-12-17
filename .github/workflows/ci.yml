@@ -1,0 +1,41 @@
+name: GitHub Actions Build and Deploy
+
+on:
+  push:
+    branches:
+      - master
+      - v*
+    paths:
+      - src/**
+      - docs/**
+      - typings/**
+      - .fatherrc.ts
+      - .umirc.js
+      - tsconfig.json
+      - package.json
+      - .github/workflows/*
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.1 # If you're using actions/checkout@v2 you must set persist-credentials to false in most cases for the deployment to work correctly.
+        # with:
+        #   persist-credentials: false
+      - name: Install
+        run: npm install
+      - name: Build docs
+        run: npm run docs
+      - name: Deploy docs
+        # uses: JamesIves/github-pages-deploy-action@4.0.0
+        uses: JamesIves/github-pages-deploy-action@4.1.7
+        with:
+          # GITHUB_TOKEN: ${{ secrets.ECO_WEB_SITE_TOKEN }}
+          # BRANCH: gh-pages
+          # FOLDER: site
+          # TARGET_FOLDER: ${{github.ref}}
+          # token: ${{ secrets.WEBSITE }}
+          branch: gh-pages
+          folder: site
+          target-folder: ${{github.ref}}
