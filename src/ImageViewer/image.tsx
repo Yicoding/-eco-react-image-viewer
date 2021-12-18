@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import AnyTouch from 'any-touch';
+
 import { ImageItem } from '../utils/types';
 
 import './styles.less';
@@ -12,7 +13,7 @@ type Info = {
 export default (props: ImageItem) => {
   const ref = useRef<any>();
 
-  const { src, site, index } = props;
+  const { src, site, index, transInfo, scaleRate } = props;
 
   const [innerInfo, setInnerInfo] = useState<Info>({
     width: 1,
@@ -51,10 +52,6 @@ export default (props: ImageItem) => {
     };
     // 设置src属性，Image实例开始加载图片
     image.src = src;
-    const at = new AnyTouch(ref.current);
-    at.on('tap', (e) => console.log('tap事件', e));
-    at.on('swipe', (e) => console.log('swipe事件', e));
-    at.on('pan', (e) => console.log('pan事件', e));
   }, []);
 
   useEffect(() => {
@@ -77,10 +74,20 @@ export default (props: ImageItem) => {
     <div
       className="image-slide"
       style={{
-        transform: `translateX(${-100 * (index - site)}%)`,
+        transform: `translate(calc(${-100 * (index - site)}% + ${transInfo.x}px), ${
+          index === site ? transInfo.y : 0
+        }px)`,
       }}
     >
-      <img src={src} className="image-item" style={imageSize} ref={ref} />
+      <img
+        src={src}
+        className="image-item"
+        style={Object.assign({}, imageSize, {
+          transform: `translate(-50%, -50%) scale(${index === site ? scaleRate : 1}`,
+          zIndex: index === site ? 3005 : 2,
+        })}
+        ref={ref}
+      />
     </div>
   );
 };

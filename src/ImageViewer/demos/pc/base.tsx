@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Button } from 'antd-mobile';
 import ImageViewer from '@eco/react-image-viewer';
 
 import aLg from '../../../assets/images/a-lg.png';
@@ -9,39 +10,16 @@ import yLg from '../../../assets/images/y-lg.png';
 import ySm from '../../../assets/images/y-sm.png';
 
 export default () => {
+  const [visible, setVisible] = useState<boolean>(false);
+
+  const onClose = () => setVisible((val) => !val);
+
   return (
-    <ImageViewer
-      // urls={[aLg]}
-      // urls={[aSm]}
-      // urls={[xLg]}
-      // urls={[xSm]}
-      // urls={[yLg]}
-      urls={[
-        aLg,
-        aSm,
-        xLg,
-        xSm,
-        yLg,
-        ySm,
-        aLg,
-        aSm,
-        xLg,
-        xSm,
-        yLg,
-        ySm,
-        aLg,
-        aSm,
-        xLg,
-        xSm,
-        yLg,
-        ySm,
-        aLg,
-        aSm,
-        xLg,
-        xSm,
-        yLg,
-        ySm,
-      ]}
-    />
+    <div>
+      <Button color="primary" onClick={onClose}>
+        Primary
+      </Button>
+      {visible && <ImageViewer urls={[aLg, aSm, xLg, xSm, yLg, ySm]} onClose={onClose} />}
+    </div>
   );
 };
