@@ -74,17 +74,16 @@ export default (props: ImageItem) => {
     <div
       className="image-slide"
       style={{
-        transform: `translate(calc(${-100 * (index - site)}% + ${transInfo.x}px), ${
-          index === site ? transInfo.y : 0
-        }px)`,
+        transform: `translate3d(calc(${-100 * (index - site)}% + ${
+          scaleRate === 1 ? transInfo.x : index === site ? transInfo.x : 0
+        }px), ${index === site ? transInfo.y : 0}px, 0)`,
       }}
     >
       <img
         src={src}
         className="image-item"
         style={Object.assign({}, imageSize, {
-          transform: `translate(-50%, -50%) scale(${index === site ? scaleRate : 1}`,
-          zIndex: index === site ? 3005 : 2,
+          transform: `translate3d(-50%, -50%, 0) scale(${index === site ? scaleRate : 1}`,
         })}
         ref={ref}
       />

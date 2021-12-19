@@ -46,11 +46,11 @@ const umiConfig = {
         children: [
           {
             title: '移动端',
-            path: '/components/ImageViewer/mobile.md',
+            path: '/components/ImageViewer/mobile',
           },
           {
             title: 'PC端',
-            path: '/components/ImageViewer/pc.md',
+            path: '/components/ImageViewer/pc',
           },
         ],
       },

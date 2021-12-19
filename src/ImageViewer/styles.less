@@ -17,11 +17,12 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%);
+      transform: translate3d(-50%, -50%);
+      transition: all 0.2s linear;
     }
   }
   .point-box {
-    position: absolute;
+    position: fixed;
     bottom: 60px;
     left: 0;
     z-index: 3001;
@@ -40,6 +41,92 @@
       &.point-on {
         background: #fff;
       }
+    }
+  }
+  .image-tools {
+    position: fixed;
+    top: 20px;
+    right: 50px;
+    z-index: 3001;
+    display: flex;
+    align-items: center;
+    .tools-btn {
+      position: relative;
+      width: 30px;
+      height: 30px;
+      margin-right: 20px;
+      border: 3px solid #ddd;
+      border-radius: 50%;
+      cursor: pointer;
+      &.tools-reduce {
+        &:before {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 15px;
+          height: 3px;
+          background: #ddd;
+          border-radius: 3px;
+          transform: translate(-50%, -50%);
+          content: '';
+        }
+      }
+      &.tools-add {
+        &:before {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 15px;
+          height: 3px;
+          background: #ddd;
+          border-radius: 3px;
+          transform: translate(-50%, -50%);
+          content: '';
+        }
+        &:after {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 3px;
+          height: 15px;
+          background: #ddd;
+          border-radius: 3px;
+          transform: translate(-50%, -50%);
+          content: '';
+        }
+      }
+    }
+    .tools-reset {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 60px;
+      height: 30px;
+      color: #fff;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  }
+  .tools-arrow {
+    position: fixed;
+    top: 50%;
+    z-index: 3001;
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: solid #ddd;
+    border-width: 5px 0 0 5px;
+    border-radius: 3px;
+    &.tools-left {
+      left: 20px;
+      z-index: 3001;
+      transform: translateY(-50%) rotate(-45deg);
+    }
+    &.tools-right {
+      right: 20px;
+      display: inline-block;
+      transform: translateY(-50%) rotate(135deg);
     }
   }
 }

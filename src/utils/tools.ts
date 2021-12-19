@@ -12,3 +12,7 @@ export function throttle(fn: Function, wait: number) {
     }
   };
 }
+
+export const isPc = !/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+  navigator.userAgent,
+);
