@@ -18,17 +18,17 @@
     position: absolute;
     width: 100%;
     height: 100%;
-    &.@{prefix-cls}-slide-trans {
-      transition: all 0.2s linear;
-    }
+    transition: all 0.2s linear;
     .@{prefix-cls}-image-item {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      transition: all 0.2s linear;
       &.@{prefix-cls}-loading {
         animation: myRotate 1s linear infinite;
+      }
+      &.@{prefix-cls}-trans {
+        transition: all 0.2s linear;
       }
     }
   }
@@ -47,8 +47,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 50px;
-      height: 50px;
+      width: 40px;
+      height: 30px;
       .@{prefix-cls}-point {
         width: 15px;
         height: 15px;

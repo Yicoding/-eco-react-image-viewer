@@ -1,7 +1,7 @@
 export declare type ImageViewer = {
+  urls?: string[];
   onClose?: () => void;
   index?: number;
-  urls?: string[];
 };
 export declare type MoveInfo = {
   x: number;
@@ -13,8 +13,8 @@ export declare type ImageItem = {
   index: number;
   transInfo: MoveInfo;
   scaleRate: number;
-  isChange: boolean;
   innerInfo: Info;
+  isTrans: boolean;
 };
 export declare type Info = {
   width: number;

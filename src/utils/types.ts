@@ -1,7 +1,7 @@
 export type ImageViewer = {
+  urls?: string[];
   onClose?: () => void;
   index?: number;
-  urls?: string[];
 };
 
 export type MoveInfo = {
@@ -15,8 +15,8 @@ export type ImageItem = {
   index: number;
   transInfo: MoveInfo;
   scaleRate: number;
-  isChange: boolean;
   innerInfo: Info;
+  isTrans: boolean;
 };
 
 export type Info = {

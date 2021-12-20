@@ -36,8 +36,8 @@ export default (props: ImageViewer) => {
   const [currentIndex, setCurrentIndex] = useState<number>(index);
   const [transInfo, setTransInfo] = useState<MoveInfo>(config.axis);
   const [scaleRate, setScaleRate] = useState<number>(config.scale);
-  const [isChange, setIsChange] = useState<boolean>(false);
   const [isPc, setIsPc] = useState<boolean>(false);
+  const [isTrans, setIsTrans] = useState<boolean>(false);
   const [innerInfo, setInnerInfo] = useState<Info>({
     width: 1,
     height: 1,
@@ -54,18 +54,12 @@ export default (props: ImageViewer) => {
     };
   }, []);
 
-  // 添加过渡效果
-  const dealChange = () => {
-    setIsChange(true);
+  // 图片过度效果
+  const onTrans = () => {
+    setIsTrans(true);
     setTimeout(() => {
-      setIsChange(false);
+      setIsTrans(false);
     }, 200);
-  };
-
-  // 切换index
-  const onChangeCurrentIndex = (i: number) => {
-    setCurrentIndex(i);
-    dealChange();
   };
 
   // 恢复初始状态
@@ -75,6 +69,7 @@ export default (props: ImageViewer) => {
     refTrans.current = config.axis;
     setScaleRate(config.scale);
     refScale.current = config.scale;
+    onTrans();
   };
 
   // 监听移动事件
@@ -105,10 +100,10 @@ export default (props: ImageViewer) => {
     at.on('swipe', (e) => {
       // console.log('swipe事件', e)
       if (e.direction === 'left' && ableNext) {
-        onChangeCurrentIndex(currentIndex + 1);
+        setCurrentIndex(currentIndex + 1);
       }
       if (e.direction === 'right' && ablePrev) {
-        onChangeCurrentIndex(currentIndex - 1);
+        setCurrentIndex(currentIndex - 1);
       }
     });
     at.on('panmove', (e) => {
@@ -137,7 +132,6 @@ export default (props: ImageViewer) => {
       if (refScale.current < config.mindScale) {
         onClose();
       } else if (refScale.current < 1) {
-        dealChange();
         onReset();
       }
       setTimeout(() => {
@@ -148,9 +142,9 @@ export default (props: ImageViewer) => {
       }, 100);
       if (Math.abs(x) / window.innerWidth > config.slide && refScale.current === config.scale) {
         if (x <= 0 && ableNext) {
-          onChangeCurrentIndex(currentIndex + 1);
+          setCurrentIndex(currentIndex + 1);
         } else if (x > 0 && ablePrev) {
-          onChangeCurrentIndex(currentIndex - 1);
+          setCurrentIndex(currentIndex - 1);
         }
       }
       if (refScale.current === config.scale) {
@@ -190,6 +184,7 @@ export default (props: ImageViewer) => {
     });
   };
 
+  // 判断当前环境
   useEffect(() => {
     onChangeInner();
     setIsPc(window.innerWidth > config.mobileWidth);
@@ -202,6 +197,7 @@ export default (props: ImageViewer) => {
     };
   }, []);
 
+  // 放大
   const zoomIn = () => {
     if (refScale.current < config.maxScale) {
       refScale.current = Math.min(refScale.current * 2, config.maxScale);
@@ -209,6 +205,7 @@ export default (props: ImageViewer) => {
     }
   };
 
+  // 缩小
   const zoomOut = () => {
     if (refScale.current > config.minScale) {
       refScale.current = Math.max(refScale.current * 0.8, config.minScale);
@@ -216,21 +213,24 @@ export default (props: ImageViewer) => {
     }
   };
 
+  // 还原
   const zoomReset = () => {
     if (refScale.current !== config.scale) {
       onReset();
     }
   };
 
+  // 上一张
   const onPrev = () => {
     if (ablePrev) {
-      onChangeCurrentIndex(currentIndex - 1);
+      setCurrentIndex(currentIndex - 1);
     }
   };
 
+  // 下一张
   const onNext = () => {
     if (ableNext) {
-      onChangeCurrentIndex(currentIndex + 1);
+      setCurrentIndex(currentIndex + 1);
     }
   };
 
@@ -245,8 +245,8 @@ export default (props: ImageViewer) => {
             site={i}
             transInfo={transInfo}
             scaleRate={scaleRate}
-            isChange={isChange}
             innerInfo={innerInfo}
+            isTrans={isTrans}
           />
         );
       })}
@@ -256,11 +256,11 @@ export default (props: ImageViewer) => {
             return (
               <div
                 className={`${prefixCls}-point-item`}
-                onMouseDown={() => onChangeCurrentIndex(i)}
-                onTouchEnd={() => onChangeCurrentIndex(i)}
+                onMouseDown={() => setCurrentIndex(i)}
+                onTouchEnd={() => setCurrentIndex(i)}
+                key={i}
               >
                 <span
-                  key={i}
                   className={classnames(`${prefixCls}-point`, {
                     [`${prefixCls}-point-on`]: currentIndex === i,
                   })}

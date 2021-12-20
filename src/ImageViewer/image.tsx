@@ -11,7 +11,7 @@ const prefixCls = 'eco-image-viewer';
 export default (props: ImageItem) => {
   const ref = useRef<any>();
 
-  const { src, site, index, transInfo, scaleRate, isChange, innerInfo } = props;
+  const { src, site, index, transInfo, scaleRate, innerInfo, isTrans } = props;
 
   const [url, setUrl] = useState<string>();
   const [loading, setLoading] = useState<boolean>(true);
@@ -55,18 +55,24 @@ export default (props: ImageItem) => {
 
   return (
     <div
-      className={classnames(`${prefixCls}-image-slide`, { [`${prefixCls}-slide-trans`]: isChange })}
+      className={`${prefixCls}-image-slide`}
       style={{
-        transform: `translate(calc(${-100 * (index - site)}% + ${
-          scaleRate === 1 ? transInfo.x : index === site ? transInfo.x : 0
-        }px), ${index === site ? transInfo.y : 0}px)`,
+        transform: `translate(calc(${-100 * (index - site)}%), 0`,
       }}
     >
       <img
         src={url}
-        className={classnames(`${prefixCls}-image-item`, { [`${prefixCls}-loading`]: loading })}
+        className={classnames(
+          `${prefixCls}-image-item`,
+          { [`${prefixCls}-loading`]: loading },
+          { [`${prefixCls}-trans`]: isTrans },
+        )}
         style={Object.assign({}, imageSize, {
-          transform: `translate(-50%, -50%) scale(${index === site ? scaleRate : 1}`,
+          transform: `translate(calc(-50% + ${
+            scaleRate === 1 ? transInfo.x : index === site ? transInfo.x : 0
+          }px), calc(-50% + ${index === site ? transInfo.y : 0}px)) scale(${
+            index === site ? scaleRate : 1
+          }`,
         })}
         ref={ref}
       />
