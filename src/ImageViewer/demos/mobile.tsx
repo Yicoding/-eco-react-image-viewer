@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ImagePreview from 'react-image-view';
+import ImageViewer from 'eco-react-image-viewer';
 
 import s from './styles.less';
 
@@ -20,7 +20,7 @@ export default () => {
       <div className={s.btnPrimary} onClick={onClose}>
         预览
       </div>
-      {visible && <ImagePreview urls={[aLg, aSm, xLg, xSm, yLg, ySm]} onClose={onClose} />}
+      {visible && <ImageViewer urls={[aLg, aSm, xLg, xSm, yLg, ySm]} onClose={onClose} />}
     </div>
   );
 };

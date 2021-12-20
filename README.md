@@ -1,4 +1,4 @@
-# react-image-view
+# eco-react-image-viewer
 
 [![npm][npm]][npm-url] ![GitHub](https://shopmushi.com/configFile/assets/mit.svg)
 
@@ -11,36 +11,42 @@
 ### npm 或 yarn 安装
 
 ```shell
-npm install react-image-view
+npm install eco-react-image-viewer
 # or
-yarn add react-image-view
+yarn add eco-react-image-viewer
 ```
 
 ### 示例
 
-```javascript
+```ts
 import React, { useState } from 'react';
-import ImagePreview from 'react-image-view';
+import ImageViewer from 'eco-react-image-viewer';
 
-type FileItem = {
-  url: string, // 图片url
-  loading?: boolean, // 图片是否加载中
-  errorTip?: string, // 错误提示
-  name?: string, // 文件说明
-  fileName?: string, // 文件名称,包含后缀
-  [index: string]: any
-};
+import s from './styles.less';
+
+import aLg from '../../fixtures/images/a-lg.png';
+import aMd from '../../fixtures/images/a-md.png';
+import xLg from '../../fixtures/images/x-lg.png';
+import xMd from '../../fixtures/images/x-md.png';
+import yLg from '../../fixtures/images/y-lg.png';
+import yMd from '../../fixtures/images/y-md.png';
 
 export default () => {
-  const [value, setValue] = useState<FileItem[]>([]);
+  const [visible, setVisible] = useState<boolean>(false);
 
-  // 数组改变
-  const onChange = (arr: FileItem[]) => setValue(arr);
+  const onClose = () => setVisible((val) => !val);
 
-  return <ImagePreview index={index} urls={urls} onClose={onClose} />;
+  return (
+    <div>
+      <div className={s.btnPrimary} onClick={onClose}>
+        预览
+      </div>
+      {visible && <ImageViewer urls={[aLg, aMd, xLg, xMd, yLg, yMd]} onClose={onClose} />}
+    </div>
+  );
 };
 ```
 
-[npm]: https://img.shields.io/npm/v/react-image-view.svg
-[npm-url]: https://www.npmjs.com/package/react-image-view
-[site]: https://yicoding.github.io/react-image-view
+[npm]: https://img.shields.io/npm/v/eco-react-image-viewer.svg
+[npm-url]: https://www.npmjs.com/package/eco-react-image-viewer
+[site]: https://yicoding.github.io/eco-react-image-viewer

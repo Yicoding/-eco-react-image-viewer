@@ -16,16 +16,16 @@ nav:
 ### npm 或 yarn 安装
 
 ```bash
-npm install react-image-view
+npm install eco-react-image-viewer
 # or
-yarn add react-image-view
+yarn add eco-react-image-viewer
 ```
 
 ### 示例
 
 ```ts
 import React, { useState } from 'react';
-import ImagePreview from 'react-image-view';
+import ImageViewer from 'eco-react-image-viewer';
 
 import s from './styles.less';
 
@@ -46,11 +46,11 @@ export default () => {
       <div className={s.btnPrimary} onClick={onClose}>
         预览
       </div>
-      {visible && <ImagePreview urls={[aLg, aMd, xLg, xMd, yLg, yMd]} onClose={onClose} />}
+      {visible && <ImageViewer urls={[aLg, aMd, xLg, xMd, yLg, yMd]} onClose={onClose} />}
     </div>
   );
 };
 ```
 
-[npm]: https://img.shields.io/npm/v/react-image-view.svg
-[npm-url]: https://www.npmjs.com/package/react-image-view
+[npm]: https://img.shields.io/npm/v/eco-react-image-viewer.svg
+[npm-url]: https://www.npmjs.com/package/eco-react-image-viewer

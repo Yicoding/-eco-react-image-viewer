@@ -1,7 +1,7 @@
 ---
-title: react-image-view - 基于react的图片预览组件，兼容PC、移动端
+title: eco-react-image-viewer - 基于react的图片预览组件，兼容PC、移动端
 hero:
-  title: react-image-view
+  title: eco-react-image-viewer
   desc: 基于react的图片预览组件，兼容PC、移动端
   actions:
     - text: 快速上手
