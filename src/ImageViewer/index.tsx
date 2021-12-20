@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 
 import AnyTouch from 'any-touch';
+import classnames from 'classnames';
 
 import Image from './image';
 import { noon } from '../utils/tools';
@@ -10,18 +11,30 @@ import './styles.less';
 
 const prefixCls = 'eco-image-viewer';
 
+const config = {
+  x: 0,
+  y: 0,
+  axis: { x: 0, y: 0 },
+  scale: 1,
+  doubleScale: 2,
+  slide: 1 / 3,
+  maxScale: 4,
+  minScale: 0.5,
+  mobileWidth: 420,
+};
+
 export default (props: ImageViewer) => {
   const refRoot = useRef<any>();
-  const refScale = useRef<any>(1);
-  const refTrans = useRef<any>({ x: 0, y: 0 });
-  const refStart = useRef<MoveInfo>({ x: 0, y: 0 });
+  const refScale = useRef<any>(config.scale);
+  const refTrans = useRef<any>(config.axis);
+  const refStart = useRef<MoveInfo>(config.axis);
   const refTimer = useRef<any>();
 
   const { onClose = noon, index = 0, urls = [] } = props;
 
   const [currentIndex, setCurrentIndex] = useState<number>(index);
-  const [transInfo, setTransInfo] = useState<MoveInfo>({ x: 0, y: 0 });
-  const [scaleRate, setScaleRate] = useState<number>(1);
+  const [transInfo, setTransInfo] = useState<MoveInfo>(config.axis);
+  const [scaleRate, setScaleRate] = useState<number>(config.scale);
   const [isChange, setIsChange] = useState<boolean>(false);
   const [isPc, setIsPc] = useState<boolean>(false);
   const [innerInfo, setInnerInfo] = useState<Info>({
@@ -29,6 +42,10 @@ export default (props: ImageViewer) => {
     height: 1,
   });
 
+  const ablePrev = currentIndex > 0;
+  const ableNext = currentIndex < urls.length - 1;
+
+  // 防止触摸穿透
   useEffect(() => {
     document.body.classList.add('fixed-body');
     return () => {
@@ -36,6 +53,7 @@ export default (props: ImageViewer) => {
     };
   }, []);
 
+  // 添加过渡效果
   const dealChange = () => {
     setIsChange(true);
     setTimeout(() => {
@@ -43,33 +61,41 @@ export default (props: ImageViewer) => {
     }, 200);
   };
 
+  // 切换index
+  const onChangeCurrentIndex = (i: number) => {
+    setCurrentIndex(i);
+    dealChange();
+  };
+
+  // 恢复初始状态
+  const onReset = () => {
+    refStart.current = config.axis;
+    setTransInfo(config.axis);
+    refTrans.current = config.axis;
+    setScaleRate(config.scale);
+    refScale.current = config.scale;
+  };
+
+  // 监听移动事件
   useEffect(() => {
-    refStart.current = { x: 0, y: 0 };
-    setTransInfo({ x: 0, y: 0 });
-    refTrans.current = { x: 0, y: 0 };
-    setScaleRate(1);
-    refScale.current = 1;
+    onReset();
     const at = new AnyTouch(refRoot.current);
+    // 单击事件
     at.on('tap', (e) => {
       // console.log('tap事件', e);
       const target = e.target as HTMLTextAreaElement;
       if (/point|tools/.test(target.className)) {
         return;
       }
+      // 双击事件
       if (refTimer.current) {
         clearTimeout(refTimer.current);
         refTimer.current = null;
-        if (refScale.current === 1) {
-          refScale.current = 2;
-          setScaleRate(2);
-        } else {
-          setScaleRate(1);
-          refStart.current = { x: 0, y: 0 };
-          setTransInfo({ x: 0, y: 0 });
-          refTrans.current = { x: 0, y: 0 };
-          refScale.current = 1;
+        if (refScale.current === config.scale) {
+          refScale.current = config.doubleScale;
+          return setScaleRate(config.doubleScale);
         }
-        return;
+        return onReset();
       }
       refTimer.current = setTimeout(() => {
         onClose();
@@ -77,66 +103,61 @@ export default (props: ImageViewer) => {
     });
     at.on('swipe', (e) => {
       // console.log('swipe事件', e)
-      if (e.direction === 'left' && currentIndex < urls.length - 1) {
-        setCurrentIndex(currentIndex + 1);
-        dealChange();
+      if (e.direction === 'left' && ableNext) {
+        onChangeCurrentIndex(currentIndex + 1);
       }
-      if (e.direction === 'right' && currentIndex > 0) {
-        setCurrentIndex(currentIndex - 1);
-        dealChange();
+      if (e.direction === 'right' && ablePrev) {
+        onChangeCurrentIndex(currentIndex - 1);
       }
     });
     at.on('panmove', (e) => {
       // console.log('pan事件', e.displacementX);
-      let x = e.displacementX,
-        y = e.displacementY;
-      let endX = parseInt((refStart.current.x + x).toFixed(0)),
-        endY = parseInt((refStart.current.y + y).toFixed(0));
+      let endX = parseInt((refStart.current.x + e.displacementX).toFixed(0)),
+        endY = parseInt((refStart.current.y + e.displacementY).toFixed(0));
       const item = { x: endX, y: endY };
       setTransInfo(item);
       refTrans.current = item;
     });
     at.on('panend', (e) => {
       // console.log('pan事件', e.x);
-      const x = refStart?.current?.x || 0;
-      if (refScale.current !== 1) {
+      const x = e.displacementX,
+        y = e.displacementY;
+      if (refScale.current !== config.scale) {
         refStart.current = {
-          x: refStart.current.x + e.displacementX,
-          y: refStart.current.y + e.displacementY,
+          x: refStart.current.x + x,
+          y: refStart.current.y + y,
         };
       }
       setTimeout(() => {
         setTransInfo({
-          x: refScale.current === 1 ? 0 : refTrans.current.x,
-          y: refScale.current === 1 ? 0 : refTrans.current.y,
+          x: refScale.current === config.scale ? 0 : refTrans.current.x,
+          y: refScale.current === config.scale ? 0 : refTrans.current.y,
         });
       }, 100);
-      if (Math.abs(e.displacementX) / window.innerWidth > 1 / 3 && refScale.current === 1) {
-        if (e.displacementX <= 0) {
-          if (currentIndex < urls.length - 1) {
-            setCurrentIndex(currentIndex + 1);
-            dealChange();
-          }
-        } else {
-          if (currentIndex > 0) {
-            setCurrentIndex(currentIndex - 1);
-            dealChange();
-          }
+      if (Math.abs(x) / window.innerWidth > config.slide && refScale.current === config.scale) {
+        if (x <= 0 && ableNext) {
+          onChangeCurrentIndex(currentIndex + 1);
+        } else if (x > 0 && ablePrev) {
+          onChangeCurrentIndex(currentIndex - 1);
         }
       }
-      if (refScale.current === 1) {
-        refStart.current = { x: 0, y: 0 };
-        setTransInfo({ x: 0, y: 0 });
-        refTrans.current = { x: 0, y: 0 };
+      if (refScale.current === config.scale) {
+        onReset();
       }
     });
     at.on('pinchmove', (e) => {
       console.log('pinch', e.deltaScale);
       if (e.scale > 1) {
         // 放大
-        refScale.current = Math.min(Math.round(refScale.current * e.deltaScale * 100) / 100, 4);
+        refScale.current = Math.min(
+          Math.round(refScale.current * e.deltaScale * 100) / 100,
+          config.maxScale,
+        );
       } else {
-        refScale.current = Math.max(Math.round(refScale.current * e.deltaScale * 100) / 100, 0.5);
+        refScale.current = Math.max(
+          Math.round(refScale.current * e.deltaScale * 100) / 100,
+          config.minScale,
+        );
       }
       setScaleRate(refScale.current);
     });
@@ -145,18 +166,19 @@ export default (props: ImageViewer) => {
     };
   }, [currentIndex]);
 
-  useEffect(() => {
+  const onChangeInner = () => {
     setInnerInfo({
       width: window.innerWidth,
       height: window.innerHeight,
     });
-    setIsPc(window.innerWidth > 420);
+  };
+
+  useEffect(() => {
+    onChangeInner();
+    setIsPc(window.innerWidth > config.mobileWidth);
     window.addEventListener('resize', () => {
-      setInnerInfo({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-      setIsPc(window.innerWidth > 420);
+      onChangeInner();
+      setIsPc(window.innerWidth > config.mobileWidth);
     });
     return () => {
       window.removeEventListener('resize', () => {});
@@ -164,43 +186,34 @@ export default (props: ImageViewer) => {
   }, []);
 
   const zoomIn = () => {
-    console.log('zoomIn', refScale.current);
-    if (refScale.current < 4) {
-      refScale.current = Math.min(refScale.current * 2, 4);
+    if (refScale.current < config.maxScale) {
+      refScale.current = Math.min(refScale.current * 2, config.maxScale);
       setScaleRate(refScale.current);
     }
   };
 
   const zoomOut = () => {
-    console.log('zoomOut', refScale.current);
-    if (refScale.current > 0.5) {
-      refScale.current = Math.max(refScale.current * 0.8, 0.5);
+    if (refScale.current > config.minScale) {
+      refScale.current = Math.max(refScale.current * 0.8, config.minScale);
       setScaleRate(refScale.current);
     }
   };
 
   const zoomReset = () => {
-    console.log('zoomReset', refScale.current);
-    if (refScale.current !== 1) {
-      refScale.current = 1;
-      setScaleRate(1);
-      refStart.current = { x: 0, y: 0 };
-      setTransInfo({ x: 0, y: 0 });
-      refTrans.current = { x: 0, y: 0 };
+    if (refScale.current !== config.scale) {
+      onReset();
     }
   };
 
   const onPrev = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex((val) => val - 1);
-      dealChange();
+    if (ablePrev) {
+      onChangeCurrentIndex(currentIndex - 1);
     }
   };
 
   const onNext = () => {
-    if (currentIndex < urls.length - 1) {
-      setCurrentIndex((val) => val + 1);
-      dealChange();
+    if (ableNext) {
+      onChangeCurrentIndex(currentIndex + 1);
     }
   };
 
@@ -226,19 +239,11 @@ export default (props: ImageViewer) => {
             return (
               <span
                 key={i}
-                className={`${prefixCls}-point ${
-                  currentIndex === i ? `${prefixCls}-point-on` : ''
-                }`}
-                onMouseDown={() => {
-                  console.log('point mouse', i);
-                  setCurrentIndex(i);
-                  dealChange();
-                }}
-                onTouchEnd={() => {
-                  console.log('point Touch', i);
-                  setCurrentIndex(i);
-                  dealChange();
-                }}
+                className={classnames(`${prefixCls}-point`, {
+                  [`${prefixCls}-point-on`]: currentIndex === i,
+                })}
+                onMouseDown={() => onChangeCurrentIndex(i)}
+                onTouchEnd={() => onChangeCurrentIndex(i)}
               />
             );
           })}
@@ -266,12 +271,16 @@ export default (props: ImageViewer) => {
             </div>
           </div>
           <div
-            className={`${prefixCls}-tools-arrow ${prefixCls}-tools-left`}
+            className={classnames(`${prefixCls}-tools-arrow ${prefixCls}-tools-left`, {
+              [`${prefixCls}-tools-active`]: ablePrev,
+            })}
             onMouseDown={onPrev}
             onTouchEnd={onPrev}
           />
           <div
-            className={`${prefixCls}-tools-arrow ${prefixCls}-tools-right`}
+            className={classnames(`${prefixCls}-tools-arrow ${prefixCls}-tools-right`, {
+              [`${prefixCls}-tools-active`]: ableNext,
+            })}
             onMouseDown={onNext}
             onTouchEnd={onNext}
           />

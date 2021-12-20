@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import classnames from 'classnames';
 import { ImageItem, Info } from '../utils/types';
 
 import './styles.less';
@@ -47,37 +48,18 @@ export default (props: ImageItem) => {
 
   return (
     <div
-      className={`${prefixCls}-image-slide ${isChange ? `${prefixCls}-slide-trans` : ''}`}
-      style={Object.assign(
-        {},
-        {
-          transform: `translate(calc(${-100 * (index - site)}% + ${
-            scaleRate === 1 ? transInfo.x : index === site ? transInfo.x : 0
-          }px), ${index === site ? transInfo.y : 0}px)`,
-          '-webkit-transform': `translate(calc(${-100 * (index - site)}% + ${
-            scaleRate === 1 ? transInfo.x : index === site ? transInfo.x : 0
-          }px), ${index === site ? transInfo.y : 0}px)`,
-          '-ms-transform': `translate(calc(${-100 * (index - site)}% + ${
-            scaleRate === 1 ? transInfo.x : index === site ? transInfo.x : 0
-          }px), ${index === site ? transInfo.y : 0}px)`,
-          '-moz-transform': `translate(calc(${-100 * (index - site)}% + ${
-            scaleRate === 1 ? transInfo.x : index === site ? transInfo.x : 0
-          }px), ${index === site ? transInfo.y : 0}px)`,
-          '-o-transform': `translate(calc(${-100 * (index - site)}% + ${
-            scaleRate === 1 ? transInfo.x : index === site ? transInfo.x : 0
-          }px), ${index === site ? transInfo.y : 0}px)`,
-        },
-      )}
+      className={classnames(`${prefixCls}-image-slide`, { [`${prefixCls}-slide-trans`]: isChange })}
+      style={{
+        transform: `translate(calc(${-100 * (index - site)}% + ${
+          scaleRate === 1 ? transInfo.x : index === site ? transInfo.x : 0
+        }px), ${index === site ? transInfo.y : 0}px)`,
+      }}
     >
       <img
         src={src}
         className={`${prefixCls}-image-item`}
         style={Object.assign({}, imageSize, {
           transform: `translate(-50%, -50%) scale(${index === site ? scaleRate : 1}`,
-          '-webkit-transform': `translate(-50%, -50%) scale(${index === site ? scaleRate : 1}`,
-          '-ms-transform': `translate(-50%, -50%) scale(${index === site ? scaleRate : 1}`,
-          '-moz-transform': `translate(-50%, -50%) scale(${index === site ? scaleRate : 1}`,
-          '-o-transform': `translate(-50%, -50%) scale(${index === site ? scaleRate : 1}`,
         })}
         ref={ref}
       />
