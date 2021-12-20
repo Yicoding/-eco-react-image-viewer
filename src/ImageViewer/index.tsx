@@ -3,10 +3,12 @@ import React, { useEffect, useState, useRef } from 'react';
 import AnyTouch from 'any-touch';
 
 import Image from './image';
-import { noon, isPc } from '../utils/tools';
-import { ImageViewer, MoveInfo } from '../utils/types';
+import { noon } from '../utils/tools';
+import { ImageViewer, MoveInfo, Info } from '../utils/types';
 
 import './styles.less';
+
+const prefixCls = 'eco-image-viewer';
 
 export default (props: ImageViewer) => {
   const refRoot = useRef<any>();
@@ -20,6 +22,12 @@ export default (props: ImageViewer) => {
   const [currentIndex, setCurrentIndex] = useState<number>(index);
   const [transInfo, setTransInfo] = useState<MoveInfo>({ x: 0, y: 0 });
   const [scaleRate, setScaleRate] = useState<number>(1);
+  const [isChange, setIsChange] = useState<boolean>(false);
+  const [isPc, setIsPc] = useState<boolean>(false);
+  const [innerInfo, setInnerInfo] = useState<Info>({
+    width: 1,
+    height: 1,
+  });
 
   useEffect(() => {
     document.body.classList.add('fixed-body');
@@ -27,6 +35,13 @@ export default (props: ImageViewer) => {
       document.body.classList.remove('fixed-body');
     };
   }, []);
+
+  const dealChange = () => {
+    setIsChange(true);
+    setTimeout(() => {
+      setIsChange(false);
+    }, 200);
+  };
 
   useEffect(() => {
     refStart.current = { x: 0, y: 0 };
@@ -64,91 +79,94 @@ export default (props: ImageViewer) => {
       // console.log('swipe事件', e)
       if (e.direction === 'left' && currentIndex < urls.length - 1) {
         setCurrentIndex(currentIndex + 1);
+        dealChange();
       }
       if (e.direction === 'right' && currentIndex > 0) {
         setCurrentIndex(currentIndex - 1);
+        dealChange();
       }
     });
     at.on('panmove', (e) => {
-      console.log('pan事件', e.displacementX);
-      let x = 0,
-        y = 0;
-      if (e.displacementX < 0) {
-        x = Math.max(e.displacementX, -window.innerWidth / 5);
-      } else {
-        x = Math.min(e.displacementX, window.innerWidth / 5);
-      }
-      if (e.displacementY < 0) {
-        y = Math.max(e.displacementY, -window.innerHeight / 5);
-      } else {
-        y = Math.min(e.displacementY, window.innerHeight / 5);
-      }
-      let endX = 0,
-        endY = 0;
-      const currentX = refStart.current.x + x;
-      const currentY = refStart.current.y + y;
-      if (currentX >= 0) {
-        endX = Math.min(currentX, window.innerWidth / 2);
-      } else {
-        endX = Math.max(currentX, -window.innerWidth / 2);
-      }
-      if (currentY >= 0) {
-        endY = Math.min(currentY, window.innerWidth / 2);
-      } else {
-        endY = Math.max(currentY, -window.innerWidth / 2);
-      }
-      endX = parseInt(endX.toFixed(0));
-      endY = parseInt(endY.toFixed(0));
+      // console.log('pan事件', e.displacementX);
+      let x = e.displacementX,
+        y = e.displacementY;
+      let endX = parseInt((refStart.current.x + x).toFixed(0)),
+        endY = parseInt((refStart.current.y + y).toFixed(0));
       const item = { x: endX, y: endY };
-      requestAnimationFrame(() => {
-        setTransInfo(item);
-        refTrans.current = item;
-      });
+      setTransInfo(item);
+      refTrans.current = item;
     });
     at.on('panend', (e) => {
       // console.log('pan事件', e.x);
       const x = refStart?.current?.x || 0;
-      // console.log('move end', e, e.x - x);
-      refStart.current = {
-        x: refStart.current.x + e.displacementX,
-        y: refStart.current.y + e.displacementY,
-      };
+      if (refScale.current !== 1) {
+        refStart.current = {
+          x: refStart.current.x + e.displacementX,
+          y: refStart.current.y + e.displacementY,
+        };
+      }
       setTimeout(() => {
         setTransInfo({
           x: refScale.current === 1 ? 0 : refTrans.current.x,
           y: refScale.current === 1 ? 0 : refTrans.current.y,
         });
       }, 100);
-      if (Math.abs(e.x - x) / window.innerWidth > 1 / 3 && refScale.current === 1) {
-        if (e.x - x <= 0) {
+      if (Math.abs(e.displacementX) / window.innerWidth > 1 / 3 && refScale.current === 1) {
+        if (e.displacementX <= 0) {
           if (currentIndex < urls.length - 1) {
             setCurrentIndex(currentIndex + 1);
+            dealChange();
           }
         } else {
           if (currentIndex > 0) {
             setCurrentIndex(currentIndex - 1);
+            dealChange();
           }
         }
       }
+      if (refScale.current === 1) {
+        refStart.current = { x: 0, y: 0 };
+        setTransInfo({ x: 0, y: 0 });
+        refTrans.current = { x: 0, y: 0 };
+      }
     });
     at.on('pinchmove', (e) => {
-      console.log('pinch', e.scale);
-      requestAnimationFrame(() => {
-        if (e.scale > 0.5 && e.scale < 3) {
-          setScaleRate(e.scale);
-        }
-      });
-      refScale.current = e.scale;
+      console.log('pinch', e.deltaScale);
+      if (e.scale > 1) {
+        // 放大
+        refScale.current = Math.min(Math.round(refScale.current * e.deltaScale * 100) / 100, 4);
+      } else {
+        refScale.current = Math.max(Math.round(refScale.current * e.deltaScale * 100) / 100, 0.5);
+      }
+      setScaleRate(refScale.current);
     });
     return () => {
       at.destroy();
     };
   }, [currentIndex]);
 
+  useEffect(() => {
+    setInnerInfo({
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+    setIsPc(window.innerWidth > 420);
+    window.addEventListener('resize', () => {
+      setInnerInfo({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+      setIsPc(window.innerWidth > 420);
+    });
+    return () => {
+      window.removeEventListener('resize', () => {});
+    };
+  }, []);
+
   const zoomIn = () => {
     console.log('zoomIn', refScale.current);
-    if (refScale.current < 3) {
-      refScale.current = Math.min(refScale.current * 2, 3);
+    if (refScale.current < 4) {
+      refScale.current = Math.min(refScale.current * 2, 4);
       setScaleRate(refScale.current);
     }
   };
@@ -175,21 +193,19 @@ export default (props: ImageViewer) => {
   const onPrev = () => {
     if (currentIndex > 0) {
       setCurrentIndex((val) => val - 1);
+      dealChange();
     }
   };
 
   const onNext = () => {
     if (currentIndex < urls.length - 1) {
       setCurrentIndex((val) => val + 1);
+      dealChange();
     }
   };
 
-  const onTouchMove = (e: any) => {
-    console.log('onTouchMove', e.touches[0].clientX);
-  };
-
   return (
-    <div className="image-root" ref={refRoot} onTouchMove={onTouchMove}>
+    <div className={`${prefixCls}-image-root`} ref={refRoot}>
       {urls.map((item, i) => {
         return (
           <Image
@@ -199,23 +215,29 @@ export default (props: ImageViewer) => {
             site={i}
             transInfo={transInfo}
             scaleRate={scaleRate}
+            isChange={isChange}
+            innerInfo={innerInfo}
           />
         );
       })}
       {urls.length > 1 && (
-        <div className="point-box">
+        <div className={`${prefixCls}-point-box`}>
           {new Array(urls.length).fill(0).map((item, i) => {
             return (
               <span
                 key={i}
-                className={`point ${currentIndex === i ? 'point-on' : ''}`}
+                className={`${prefixCls}-point ${
+                  currentIndex === i ? `${prefixCls}-point-on` : ''
+                }`}
                 onMouseDown={() => {
                   console.log('point mouse', i);
                   setCurrentIndex(i);
+                  dealChange();
                 }}
                 onTouchEnd={() => {
                   console.log('point Touch', i);
                   setCurrentIndex(i);
+                  dealChange();
                 }}
               />
             );
@@ -224,15 +246,35 @@ export default (props: ImageViewer) => {
       )}
       {isPc && (
         <>
-          <div className="image-tools">
-            <span className="tools-btn tools-reduce" onMouseDown={zoomOut} onTouchEnd={zoomOut} />
-            <span className="tools-btn tools-add" onMouseDown={zoomIn} onTouchEnd={zoomIn} />
-            <div className="tools-reset" onMouseDown={zoomReset} onTouchEnd={zoomReset}>
+          <div className={`${prefixCls}-image-tools`}>
+            <span
+              className={`${prefixCls}-tools-btn ${prefixCls}-tools-reduce`}
+              onMouseDown={zoomOut}
+              onTouchEnd={zoomOut}
+            />
+            <span
+              className={`${prefixCls}-tools-btn ${prefixCls}-tools-add`}
+              onMouseDown={zoomIn}
+              onTouchEnd={zoomIn}
+            />
+            <div
+              className={`${prefixCls}-tools-reset`}
+              onMouseDown={zoomReset}
+              onTouchEnd={zoomReset}
+            >
               重置
             </div>
           </div>
-          <div className="tools-arrow tools-left" onMouseDown={onPrev} onTouchEnd={onPrev} />
-          <div className="tools-arrow tools-right" onMouseDown={onNext} onTouchEnd={onNext} />
+          <div
+            className={`${prefixCls}-tools-arrow ${prefixCls}-tools-left`}
+            onMouseDown={onPrev}
+            onTouchEnd={onPrev}
+          />
+          <div
+            className={`${prefixCls}-tools-arrow ${prefixCls}-tools-right`}
+            onMouseDown={onNext}
+            onTouchEnd={onNext}
+          />
         </>
       )}
     </div>

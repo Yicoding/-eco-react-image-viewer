@@ -1,24 +1,15 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import AnyTouch from 'any-touch';
-
-import { ImageItem } from '../utils/types';
+import { ImageItem, Info } from '../utils/types';
 
 import './styles.less';
 
-type Info = {
-  width: number;
-  height: number;
-};
+const prefixCls = 'eco-image-viewer';
 
 export default (props: ImageItem) => {
   const ref = useRef<any>();
 
-  const { src, site, index, transInfo, scaleRate } = props;
+  const { src, site, index, transInfo, scaleRate, isChange, innerInfo } = props;
 
-  const [innerInfo, setInnerInfo] = useState<Info>({
-    width: 1,
-    height: 1,
-  });
   const [imageInfo, setImageInfo] = useState<Info>({
     width: 1,
     height: 1,
@@ -54,36 +45,39 @@ export default (props: ImageItem) => {
     image.src = src;
   }, []);
 
-  useEffect(() => {
-    setInnerInfo({
-      width: window.innerWidth,
-      height: window.innerHeight,
-    });
-    window.addEventListener('resize', () => {
-      setInnerInfo({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    });
-    return () => {
-      window.removeEventListener('resize', () => {});
-    };
-  }, []);
-
   return (
     <div
-      className="image-slide"
-      style={{
-        transform: `translate3d(calc(${-100 * (index - site)}% + ${
-          scaleRate === 1 ? transInfo.x : index === site ? transInfo.x : 0
-        }px), ${index === site ? transInfo.y : 0}px, 0)`,
-      }}
+      className={`${prefixCls}-image-slide ${isChange ? `${prefixCls}-slide-trans` : ''}`}
+      style={Object.assign(
+        {},
+        {
+          transform: `translate(calc(${-100 * (index - site)}% + ${
+            scaleRate === 1 ? transInfo.x : index === site ? transInfo.x : 0
+          }px), ${index === site ? transInfo.y : 0}px)`,
+          '-webkit-transform': `translate(calc(${-100 * (index - site)}% + ${
+            scaleRate === 1 ? transInfo.x : index === site ? transInfo.x : 0
+          }px), ${index === site ? transInfo.y : 0}px)`,
+          '-ms-transform': `translate(calc(${-100 * (index - site)}% + ${
+            scaleRate === 1 ? transInfo.x : index === site ? transInfo.x : 0
+          }px), ${index === site ? transInfo.y : 0}px)`,
+          '-moz-transform': `translate(calc(${-100 * (index - site)}% + ${
+            scaleRate === 1 ? transInfo.x : index === site ? transInfo.x : 0
+          }px), ${index === site ? transInfo.y : 0}px)`,
+          '-o-transform': `translate(calc(${-100 * (index - site)}% + ${
+            scaleRate === 1 ? transInfo.x : index === site ? transInfo.x : 0
+          }px), ${index === site ? transInfo.y : 0}px)`,
+        },
+      )}
     >
       <img
         src={src}
-        className="image-item"
+        className={`${prefixCls}-image-item`}
         style={Object.assign({}, imageSize, {
-          transform: `translate3d(-50%, -50%, 0) scale(${index === site ? scaleRate : 1}`,
+          transform: `translate(-50%, -50%) scale(${index === site ? scaleRate : 1}`,
+          '-webkit-transform': `translate(-50%, -50%) scale(${index === site ? scaleRate : 1}`,
+          '-ms-transform': `translate(-50%, -50%) scale(${index === site ? scaleRate : 1}`,
+          '-moz-transform': `translate(-50%, -50%) scale(${index === site ? scaleRate : 1}`,
+          '-o-transform': `translate(-50%, -50%) scale(${index === site ? scaleRate : 1}`,
         })}
         ref={ref}
       />

@@ -15,4 +15,11 @@ export type ImageItem = {
   index: number;
   transInfo: MoveInfo;
   scaleRate: number;
+  isChange: boolean;
+  innerInfo: Info;
+};
+
+export type Info = {
+  width: number;
+  height: number;
 };
