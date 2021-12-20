@@ -20,6 +20,7 @@ const config = {
   slide: 1 / 3,
   maxScale: 4,
   minScale: 0.5,
+  mindScale: 0.6,
   mobileWidth: 420,
 };
 
@@ -47,9 +48,9 @@ export default (props: ImageViewer) => {
 
   // 防止触摸穿透
   useEffect(() => {
-    document.body.classList.add('fixed-body');
+    document.body.classList.add(`${prefixCls}-fixed-body`);
     return () => {
-      document.body.classList.remove('fixed-body');
+      document.body.classList.remove(`${prefixCls}-fixed-body`);
     };
   }, []);
 
@@ -115,6 +116,11 @@ export default (props: ImageViewer) => {
       let endX = parseInt((refStart.current.x + e.displacementX).toFixed(0)),
         endY = parseInt((refStart.current.y + e.displacementY).toFixed(0));
       const item = { x: endX, y: endY };
+      if (e.displacementY !== 0 && refScale.current <= 1) {
+        const rate = (window.innerHeight - Math.abs(e.displacementY)) / window.innerHeight;
+        setScaleRate(rate);
+        refScale.current = rate;
+      }
       setTransInfo(item);
       refTrans.current = item;
     });
@@ -127,6 +133,12 @@ export default (props: ImageViewer) => {
           x: refStart.current.x + x,
           y: refStart.current.y + y,
         };
+      }
+      if (refScale.current < config.mindScale) {
+        onClose();
+      } else if (refScale.current < 1) {
+        dealChange();
+        onReset();
       }
       setTimeout(() => {
         setTransInfo({
@@ -160,6 +172,11 @@ export default (props: ImageViewer) => {
         );
       }
       setScaleRate(refScale.current);
+    });
+    at.on('pinchend', () => {
+      if (refScale.current < 1) {
+        onReset();
+      }
     });
     return () => {
       at.destroy();
@@ -237,14 +254,18 @@ export default (props: ImageViewer) => {
         <div className={`${prefixCls}-point-box`}>
           {new Array(urls.length).fill(0).map((item, i) => {
             return (
-              <span
-                key={i}
-                className={classnames(`${prefixCls}-point`, {
-                  [`${prefixCls}-point-on`]: currentIndex === i,
-                })}
+              <div
+                className={`${prefixCls}-point-item`}
                 onMouseDown={() => onChangeCurrentIndex(i)}
                 onTouchEnd={() => onChangeCurrentIndex(i)}
-              />
+              >
+                <span
+                  key={i}
+                  className={classnames(`${prefixCls}-point`, {
+                    [`${prefixCls}-point-on`]: currentIndex === i,
+                  })}
+                />
+              </div>
             );
           })}
         </div>
@@ -269,21 +290,34 @@ export default (props: ImageViewer) => {
             >
               重置
             </div>
+            <span
+              className={`${prefixCls}-tools-btn ${prefixCls}-tools-close`}
+              onMouseDown={onClose}
+              onTouchEnd={onClose}
+            />
           </div>
           <div
-            className={classnames(`${prefixCls}-tools-arrow ${prefixCls}-tools-left`, {
-              [`${prefixCls}-tools-active`]: ablePrev,
-            })}
+            className={`${prefixCls}-tools-arrow-box ${prefixCls}-tools-left`}
             onMouseDown={onPrev}
             onTouchEnd={onPrev}
-          />
+          >
+            <div
+              className={classnames(`${prefixCls}-tools-arrow`, {
+                [`${prefixCls}-tools-active`]: ablePrev,
+              })}
+            />
+          </div>
           <div
-            className={classnames(`${prefixCls}-tools-arrow ${prefixCls}-tools-right`, {
-              [`${prefixCls}-tools-active`]: ableNext,
-            })}
+            className={`${prefixCls}-tools-arrow-box ${prefixCls}-tools-right`}
             onMouseDown={onNext}
             onTouchEnd={onNext}
-          />
+          >
+            <div
+              className={classnames(`${prefixCls}-tools-arrow`, {
+                [`${prefixCls}-tools-active`]: ableNext,
+              })}
+            />
+          </div>
         </>
       )}
     </div>
