@@ -20,7 +20,7 @@ const config = {
   slide: 1 / 3,
   maxScale: 4,
   minScale: 0.5,
-  mindScale: 0.6,
+  midScale: 0.6,
   mobileWidth: 420,
 };
 
@@ -129,7 +129,7 @@ export default (props: ImageViewer) => {
           y: refStart.current.y + y,
         };
       }
-      if (refScale.current < config.mindScale) {
+      if (refScale.current < config.midScale) {
         onClose();
       } else if (refScale.current < 1) {
         onReset();
@@ -274,12 +274,16 @@ export default (props: ImageViewer) => {
         <>
           <div className={`${prefixCls}-image-tools`}>
             <span
-              className={`${prefixCls}-tools-btn ${prefixCls}-tools-reduce`}
+              className={classnames(`${prefixCls}-tools-btn ${prefixCls}-tools-reduce`, {
+                [`${prefixCls}-tools-gray`]: scaleRate === config.minScale,
+              })}
               onMouseDown={zoomOut}
               onTouchEnd={zoomOut}
             />
             <span
-              className={`${prefixCls}-tools-btn ${prefixCls}-tools-add`}
+              className={classnames(`${prefixCls}-tools-btn ${prefixCls}-tools-add`, {
+                [`${prefixCls}-tools-gray`]: scaleRate === config.maxScale,
+              })}
               onMouseDown={zoomIn}
               onTouchEnd={zoomIn}
             />

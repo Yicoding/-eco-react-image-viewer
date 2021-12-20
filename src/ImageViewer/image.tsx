@@ -38,7 +38,6 @@ export default (props: ImageItem) => {
   }, [rateImage, rateInner, innerInfo, imageInfo]);
 
   useEffect(() => {
-    setUrl(iconLoading);
     const image = new Image();
     // 监听目标图片加载的情况，完成时再将DOM上的img节点的src属性设置为目标图片的url
     image.onload = () => {
@@ -61,7 +60,7 @@ export default (props: ImageItem) => {
       }}
     >
       <img
-        src={url}
+        src={url ?? iconLoading}
         className={classnames(
           `${prefixCls}-image-item`,
           { [`${prefixCls}-loading`]: loading },
