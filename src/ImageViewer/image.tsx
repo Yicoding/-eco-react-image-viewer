@@ -52,7 +52,9 @@ export default (props: ImageItem) => {
     <div
       className={`${prefixCls}-image-slide`}
       style={{
-        transform: `translate(calc(${-100 * (index - site)}%), 0) rotate(${rotateVal}deg)`,
+        transform: `translate(calc(${-100 * (index - site)}%), 0) rotate(${
+          index === site ? rotateVal : 0
+        }deg)`,
       }}
     >
       <img
