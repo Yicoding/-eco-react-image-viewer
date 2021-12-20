@@ -23,6 +23,9 @@
       left: 50%;
       transform: translate(-50%, -50%);
       transition: all 0.2s linear;
+      &.@{prefix-cls}-loading {
+        animation: myRotate 1s linear infinite;
+      }
     }
   }
   .@{prefix-cls}-point-box {
@@ -135,5 +138,14 @@
     &.@{prefix-cls}-tools-active {
       border-color: #fff;
     }
+  }
+}
+
+@keyframes myRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }

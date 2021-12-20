@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ImagePreview from 'react-image-preview';
+import ImagePreview from 'react-image-view';
 
 import s from './styles.less';
 

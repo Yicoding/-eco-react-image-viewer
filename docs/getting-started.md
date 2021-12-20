@@ -16,16 +16,16 @@ nav:
 ### npm 或 yarn 安装
 
 ```bash
-npm install react-image-preview
+npm install react-image-view
 # or
-yarn add react-image-preview
+yarn add react-image-view
 ```
 
 ### 示例
 
 ```ts
 import React, { useState } from 'react';
-import ImagePreview from 'react-image-preview';
+import ImagePreview from 'react-image-view';
 
 import s from './styles.less';
 
@@ -52,5 +52,5 @@ export default () => {
 };
 ```
 
-[npm]: https://img.shields.io/npm/v/react-image-preview.svg
-[npm-url]: https://www.npmjs.com/package/react-image-preview
+[npm]: https://img.shields.io/npm/v/react-image-view.svg
+[npm-url]: https://www.npmjs.com/package/react-image-view

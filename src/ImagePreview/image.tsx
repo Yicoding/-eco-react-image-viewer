@@ -4,6 +4,8 @@ import { ImageItem, Info } from '../utils/types';
 
 import './styles.less';
 
+import iconLoading from '../assets/icon_loading.png';
+
 const prefixCls = 'eco-image-viewer';
 
 export default (props: ImageItem) => {
@@ -11,9 +13,11 @@ export default (props: ImageItem) => {
 
   const { src, site, index, transInfo, scaleRate, isChange, innerInfo } = props;
 
+  const [url, setUrl] = useState<string>();
+  const [loading, setLoading] = useState<boolean>(true);
   const [imageInfo, setImageInfo] = useState<Info>({
-    width: 1,
-    height: 1,
+    width: 50,
+    height: 50,
   });
 
   const rateInner = innerInfo.width / innerInfo.height;
@@ -34,6 +38,7 @@ export default (props: ImageItem) => {
   }, [rateImage, rateInner, innerInfo, imageInfo]);
 
   useEffect(() => {
+    setUrl(iconLoading);
     const image = new Image();
     // 监听目标图片加载的情况，完成时再将DOM上的img节点的src属性设置为目标图片的url
     image.onload = () => {
@@ -41,6 +46,8 @@ export default (props: ImageItem) => {
         width: image.width,
         height: image.height,
       });
+      setUrl(src);
+      setLoading(false);
     };
     // 设置src属性，Image实例开始加载图片
     image.src = src;
@@ -56,8 +63,8 @@ export default (props: ImageItem) => {
       }}
     >
       <img
-        src={src}
-        className={`${prefixCls}-image-item`}
+        src={url}
+        className={classnames(`${prefixCls}-image-item`, { [`${prefixCls}-loading`]: loading })}
         style={Object.assign({}, imageSize, {
           transform: `translate(-50%, -50%) scale(${index === site ? scaleRate : 1}`,
         })}

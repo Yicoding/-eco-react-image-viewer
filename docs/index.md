@@ -1,7 +1,7 @@
 ---
-title: react-image-preview - 基于react的图片预览组件，兼容PC、移动端
+title: react-image-view - 基于react的图片预览组件，兼容PC、移动端
 hero:
-  title: react-image-preview
+  title: react-image-view
   desc: 基于react的图片预览组件，兼容PC、移动端
   actions:
     - text: 快速上手
