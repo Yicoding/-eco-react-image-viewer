@@ -1,29 +1,3 @@
----
-title: 快速上手
-group:
-  title: 快速上手
-nav:
-  title: 指南
-  path: /docs
----
-
-# 快速上手
-
-[![npm][npm]][npm-url] ![GitHub](@/fixtures/svg/mit.svg)
-
-## 使用
-
-### npm 或 yarn 安装
-
-```bash
-npm install react-image-preview
-# or
-yarn add react-image-preview
-```
-
-### 示例
-
-```ts
 import React, { useState } from 'react';
 import ImagePreview from 'react-image-preview';
 
@@ -50,7 +24,3 @@ export default () => {
     </div>
   );
 };
-```
-
-[npm]: https://img.shields.io/npm/v/react-image-preview.svg
-[npm-url]: https://www.npmjs.com/package/react-image-preview

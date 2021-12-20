@@ -5,7 +5,7 @@ import classnames from 'classnames';
 
 import Image from './image';
 import { noon } from '../utils/tools';
-import { ImageViewer, MoveInfo, Info } from '../utils/types';
+import { ImagePreview, MoveInfo, Info } from '../utils/types';
 
 import './styles.less';
 
@@ -23,7 +23,7 @@ const config = {
   mobileWidth: 420,
 };
 
-export default (props: ImageViewer) => {
+export default (props: ImagePreview) => {
   const refRoot = useRef<any>();
   const refScale = useRef<any>(config.scale);
   const refTrans = useRef<any>(config.axis);

@@ -1,4 +1,4 @@
-# react-image-viewer
+# react-image-preview
 
 [![npm][npm]][npm-url] ![GitHub](https://shopmushi.com/configFile/assets/mit.svg)
 
@@ -11,16 +11,16 @@
 ### npm 或 yarn 安装
 
 ```shell
-npm install @eco/react-image-viewer
+npm install react-image-preview
 # or
-yarn add @eco/react-image-viewer
+yarn add react-image-preview
 ```
 
 ### 示例
 
 ```javascript
 import React, { useState } from 'react';
-import ImageViewer from '@eco/react-image-viewer';
+import ImagePreview from 'react-image-preview';
 
 type FileItem = {
   url: string, // 图片url
@@ -37,9 +37,10 @@ export default () => {
   // 数组改变
   const onChange = (arr: FileItem[]) => setValue(arr);
 
-  return <ImageViewer index={index} urls={urls} onClose={onClose} />;
+  return <ImagePreview index={index} urls={urls} onClose={onClose} />;
 };
 ```
 
-[npm]: https://img.shields.io/npm/v/react-image-viewer.svg
-[site]: https://yicoding.github.io/react-image-viewer
+[npm]: https://img.shields.io/npm/v/react-image-preview.svg
+[npm-url]: https://www.npmjs.com/package/react-image-preview
+[site]: https://yicoding.github.io/react-image-preview

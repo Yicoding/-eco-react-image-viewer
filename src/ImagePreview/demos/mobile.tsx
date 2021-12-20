@@ -1,0 +1,26 @@
+import React, { useState } from 'react';
+import ImagePreview from 'react-image-preview';
+
+import s from './styles.less';
+
+import aLg from '../../fixtures/images/a-lg.png';
+import aSm from '../../fixtures/images/a-sm.png';
+import xLg from '../../fixtures/images/x-lg.png';
+import xSm from '../../fixtures/images/x-sm.png';
+import yLg from '../../fixtures/images/y-lg.png';
+import ySm from '../../fixtures/images/y-sm.png';
+
+export default () => {
+  const [visible, setVisible] = useState<boolean>(false);
+
+  const onClose = () => setVisible((val) => !val);
+
+  return (
+    <div>
+      <div className={s.btnPrimary} onClick={onClose}>
+        预览
+      </div>
+      {visible && <ImagePreview urls={[aLg, aSm, xLg, xSm, yLg, ySm]} onClose={onClose} />}
+    </div>
+  );
+};

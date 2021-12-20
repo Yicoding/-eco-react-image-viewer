@@ -1,4 +1,4 @@
-export declare type ImageViewer = {
+export declare type ImagePreview = {
   onClose?: () => void;
   index?: number;
   urls?: string[];

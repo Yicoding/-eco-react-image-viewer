@@ -1,5 +1,5 @@
 {
-  "name": "@eco/react-image-viewer",
+  "name": "react-image-preview",
   "version": "0.0.1",
   "description": "基于react的图片预览组件，兼容PC、移动端",
   "branch": "main",
@@ -9,7 +9,7 @@
     "*.less"
   ],
   "license": "MIT",
-  "repository": "git@github.com:Yicoding/react-image-viewer.git",
+  "repository": "git@github.com:Yicoding/react-image-preview.git",
   "scripts": {
     "start": "dumi dev",
     "build": "father-build",

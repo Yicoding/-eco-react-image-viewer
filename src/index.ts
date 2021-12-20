@@ -1,3 +1,3 @@
-import ImageViewer from './ImageViewer';
+import ImagePreview from './ImagePreview';
 
-export default ImageViewer;
+export default ImagePreview;

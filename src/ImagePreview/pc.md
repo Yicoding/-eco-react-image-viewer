@@ -1,8 +1,8 @@
 ---
 mobile: false
-group:
-  title: 图片预览
-title: PC端
+nav:
+  title: PC端
+  path: /image-preview/pc
 ---
 
 # PC 端示例
