@@ -20,7 +20,7 @@ export default () => {
       <div className={s.btnPrimary} onClick={onClose}>
         预览
       </div>
-      {visible && <ImageViewer urls={[aLg, aMd, xLg, xMd, yLg, yMd]} onClose={onClose} />}
+      <ImageViewer visible={visible} urls={[aLg, aMd, xLg, xMd, yLg, yMd]} onClose={onClose} />
     </div>
   );
 };

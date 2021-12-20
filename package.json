@@ -1,6 +1,6 @@
 {
   "name": "eco-react-image-viewer",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "基于react的图片预览组件，兼容PC、移动端",
   "branch": "main",
   "main": "lib/index.js",

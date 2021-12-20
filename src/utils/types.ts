@@ -1,5 +1,6 @@
 export type ImageViewer = {
-  urls?: string[];
+  visible: boolean;
+  urls: string[];
   onClose?: () => void;
   index?: number;
 };
@@ -10,6 +11,7 @@ export type MoveInfo = {
 };
 
 export type ImageItem = {
+  visible: boolean;
   src: string;
   site: number;
   index: number;
@@ -17,6 +19,7 @@ export type ImageItem = {
   scaleRate: number;
   innerInfo: Info;
   isTrans: boolean;
+  rotateVal: number;
 };
 
 export type Info = {

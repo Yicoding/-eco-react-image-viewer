@@ -9,21 +9,36 @@
 .@{prefix-cls}-image-root {
   position: fixed;
   top: 0;
-  right: 0;
-  bottom: 0;
   left: 0;
-  z-index: 3000;
-  background: rgba(0, 0, 0, 0.7);
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  transition: all 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
+  .@{prefix-cls}-image-mask {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 3000;
+    background: rgba(0, 0, 0, 0.7);
+    transition: all 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
+  }
   .@{prefix-cls}-image-slide {
     position: absolute;
-    width: 100%;
-    height: 100%;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 3001;
     transition: all 0.2s linear;
     .@{prefix-cls}-image-item {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
+      transition: all 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
       &.@{prefix-cls}-loading {
         animation: myRotate 1s linear infinite;
       }
@@ -47,11 +62,11 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 40px;
-      height: 30px;
+      width: 18px;
+      height: 10px;
       .@{prefix-cls}-point {
-        width: 15px;
-        height: 15px;
+        width: 8px;
+        height: 8px;
         background: #999;
         border-radius: 50%;
         &.@{prefix-cls}-point-on {
@@ -67,12 +82,24 @@
     z-index: 3001;
     display: flex;
     align-items: center;
+    .@{prefix-cls}-tools-rotate {
+      width: 25px;
+      height: 25px;
+      margin-right: 10px;
+      background-size: 100% 100%;
+      &.@{prefix-cls}-tools-rotate-l {
+        background-image: url(../assets/rotate_l.png);
+      }
+      &.@{prefix-cls}-tools-rotate-r {
+        background-image: url(../assets/rotate_r.png);
+      }
+    }
     .@{prefix-cls}-tools-btn {
       position: relative;
-      width: 30px;
-      height: 30px;
-      margin-right: 20px;
-      border: 3px solid #ddd;
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+      border: 2px solid #fff;
       border-radius: 50%;
       cursor: pointer;
       &.@{prefix-cls}-tools-reduce {
@@ -80,12 +107,18 @@
           position: absolute;
           top: 50%;
           left: 50%;
-          width: 15px;
-          height: 3px;
-          background: #ddd;
-          border-radius: 3px;
+          width: 10px;
+          height: 2px;
+          background: #fff;
+          border-radius: 1px;
           transform: translate(-50%, -50%);
           content: '';
+        }
+        &.@{prefix-cls}-tools-gray {
+          border-color: #999;
+          &:before {
+            background: #999;
+          }
         }
       }
       &.@{prefix-cls}-tools-add {
@@ -93,10 +126,10 @@
           position: absolute;
           top: 50%;
           left: 50%;
-          width: 15px;
-          height: 3px;
-          background: #ddd;
-          border-radius: 3px;
+          width: 10px;
+          height: 2px;
+          background: #fff;
+          border-radius: 1px;
           transform: translate(-50%, -50%);
           content: '';
         }
@@ -104,23 +137,31 @@
           position: absolute;
           top: 50%;
           left: 50%;
-          width: 3px;
-          height: 15px;
-          background: #ddd;
-          border-radius: 3px;
+          width: 2px;
+          height: 10px;
+          background: #fff;
+          border-radius: 1px;
           transform: translate(-50%, -50%);
           content: '';
         }
+        &.@{prefix-cls}-tools-gray {
+          border-color: #999;
+          &:before,
+          &:after {
+            background: #999;
+          }
+        }
       }
       &.@{prefix-cls}-tools-close {
+        border-color: #fff;
         &:before {
           position: absolute;
           top: 50%;
           left: 50%;
-          width: 15px;
-          height: 3px;
-          background: #ddd;
-          border-radius: 3px;
+          width: 10px;
+          height: 2px;
+          background: #fff;
+          border-radius: 1px;
           transform: translate(-50%, -50%) rotate(45deg);
           content: '';
         }
@@ -128,10 +169,10 @@
           position: absolute;
           top: 50%;
           left: 50%;
-          width: 3px;
-          height: 15px;
-          background: #ddd;
-          border-radius: 3px;
+          width: 2px;
+          height: 10px;
+          background: #fff;
+          border-radius: 1px;
           transform: translate(-50%, -50%) rotate(45deg);
           content: '';
         }
@@ -141,11 +182,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 60px;
-      height: 30px;
-      margin-right: 20px;
+      width: 40px;
+      height: 20px;
+      margin-right: 10px;
       color: #fff;
-      border: 2px solid #ddd;
+      font-size: 14px;
+      border: 2px solid #fff;
       border-radius: 5px;
       cursor: pointer;
     }
@@ -159,11 +201,10 @@
     justify-content: center;
     padding: 20px;
     .@{prefix-cls}-tools-arrow {
-      width: 40px;
-      height: 40px;
+      width: 15px;
+      height: 15px;
       border: solid #999;
-      border-width: 5px 0 0 5px;
-      border-radius: 3px;
+      border-width: 2px 0 0 2px;
       &.@{prefix-cls}-tools-active {
         border-color: #fff;
       }
@@ -181,9 +222,9 @@
 
 @keyframes myRotate {
   0% {
-    transform: rotate(0deg);
+    transform: translate(-50%, -50%) rotate(0deg);
   }
   100% {
-    transform: rotate(360deg);
+    transform: translate(-50%, -50%) rotate(360deg);
   }
 }

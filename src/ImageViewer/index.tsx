@@ -22,6 +22,8 @@ const config = {
   minScale: 0.5,
   midScale: 0.6,
   mobileWidth: 420,
+  show: { zIndex: 2000, opacity: 1 },
+  hide: { zIndex: -1, opacity: 0 },
 };
 
 export default (props: ImageViewer) => {
@@ -31,13 +33,14 @@ export default (props: ImageViewer) => {
   const refStart = useRef<MoveInfo>(config.axis);
   const refTimer = useRef<any>();
 
-  const { onClose = noon, index = 0, urls = [] } = props;
+  const { visible = false, onClose = noon, index = 0, urls = [] } = props;
 
   const [currentIndex, setCurrentIndex] = useState<number>(index);
   const [transInfo, setTransInfo] = useState<MoveInfo>(config.axis);
   const [scaleRate, setScaleRate] = useState<number>(config.scale);
   const [isPc, setIsPc] = useState<boolean>(false);
   const [isTrans, setIsTrans] = useState<boolean>(false);
+  const [rotateVal, setRotateVal] = useState<number>(0);
   const [innerInfo, setInnerInfo] = useState<Info>({
     width: 1,
     height: 1,
@@ -70,6 +73,7 @@ export default (props: ImageViewer) => {
     setScaleRate(config.scale);
     refScale.current = config.scale;
     onTrans();
+    setRotateVal(0);
   };
 
   // 监听移动事件
@@ -78,23 +82,27 @@ export default (props: ImageViewer) => {
     const at = new AnyTouch(refRoot.current);
     // 单击事件
     at.on('tap', (e) => {
-      // console.log('tap事件', e);
+      console.log('tap事件', e);
       const target = e.target as HTMLTextAreaElement;
       if (/point|tools/.test(target.className)) {
         return;
       }
       // 双击事件
       if (refTimer.current) {
+        console.log('双击');
         clearTimeout(refTimer.current);
         refTimer.current = null;
         if (refScale.current === config.scale) {
           refScale.current = config.doubleScale;
+          onTrans();
           return setScaleRate(config.doubleScale);
         }
         return onReset();
       }
       refTimer.current = setTimeout(() => {
         onClose();
+        onReset();
+        refTimer.current = null;
       }, 200);
     });
     at.on('swipe', (e) => {
@@ -131,6 +139,7 @@ export default (props: ImageViewer) => {
       }
       if (refScale.current < config.midScale) {
         onClose();
+        onReset();
       } else if (refScale.current < 1) {
         onReset();
       }
@@ -197,11 +206,22 @@ export default (props: ImageViewer) => {
     };
   }, []);
 
+  // 左旋
+  const rotateL = () => {
+    setRotateVal((val) => val - 90);
+  };
+
+  // 右旋
+  const rotateR = () => {
+    setRotateVal((val) => val + 90);
+  };
+
   // 放大
   const zoomIn = () => {
     if (refScale.current < config.maxScale) {
       refScale.current = Math.min(refScale.current * 2, config.maxScale);
       setScaleRate(refScale.current);
+      onTrans();
     }
   };
 
@@ -210,6 +230,7 @@ export default (props: ImageViewer) => {
     if (refScale.current > config.minScale) {
       refScale.current = Math.max(refScale.current * 0.8, config.minScale);
       setScaleRate(refScale.current);
+      onTrans();
     }
   };
 
@@ -217,6 +238,9 @@ export default (props: ImageViewer) => {
   const zoomReset = () => {
     if (refScale.current !== config.scale) {
       onReset();
+    }
+    if (rotateVal % 360 !== 0) {
+      setRotateVal(Math.round(rotateVal / 360) * 360);
     }
   };
 
@@ -235,10 +259,16 @@ export default (props: ImageViewer) => {
   };
 
   return (
-    <div className={`${prefixCls}-image-root`} ref={refRoot}>
+    <div
+      ref={refRoot}
+      className={`${prefixCls}-image-root`}
+      style={visible ? config.show : config.hide}
+    >
+      <div className={`${prefixCls}-image-mask`} style={visible ? config.show : config.hide} />
       {urls.map((item, i) => {
         return (
           <Image
+            visible={visible}
             key={i}
             src={item}
             index={currentIndex}
@@ -247,6 +277,7 @@ export default (props: ImageViewer) => {
             scaleRate={scaleRate}
             innerInfo={innerInfo}
             isTrans={isTrans}
+            rotateVal={rotateVal}
           />
         );
       })}
@@ -273,6 +304,16 @@ export default (props: ImageViewer) => {
       {isPc && (
         <>
           <div className={`${prefixCls}-image-tools`}>
+            <div
+              className={`${prefixCls}-tools-rotate ${prefixCls}-tools-rotate-l`}
+              onMouseDown={rotateL}
+              onTouchEnd={rotateL}
+            />
+            <div
+              className={`${prefixCls}-tools-rotate ${prefixCls}-tools-rotate-r`}
+              onMouseDown={rotateR}
+              onTouchEnd={rotateR}
+            />
             <span
               className={classnames(`${prefixCls}-tools-btn ${prefixCls}-tools-reduce`, {
                 [`${prefixCls}-tools-gray`]: scaleRate === config.minScale,

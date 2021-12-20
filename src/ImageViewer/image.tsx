@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import classnames from 'classnames';
 import { ImageItem, Info } from '../utils/types';
 
@@ -9,12 +9,9 @@ import iconLoading from '../assets/icon_loading.png';
 const prefixCls = 'eco-image-viewer';
 
 export default (props: ImageItem) => {
-  const ref = useRef<any>();
-
-  const { src, site, index, transInfo, scaleRate, innerInfo, isTrans } = props;
+  const { src, site, index, transInfo, scaleRate, innerInfo, isTrans, visible, rotateVal } = props;
 
   const [url, setUrl] = useState<string>();
-  const [loading, setLoading] = useState<boolean>(true);
   const [imageInfo, setImageInfo] = useState<Info>({
     width: 50,
     height: 50,
@@ -46,7 +43,6 @@ export default (props: ImageItem) => {
         height: image.height,
       });
       setUrl(src);
-      setLoading(false);
     };
     // 设置src属性，Image实例开始加载图片
     image.src = src;
@@ -56,24 +52,23 @@ export default (props: ImageItem) => {
     <div
       className={`${prefixCls}-image-slide`}
       style={{
-        transform: `translate(calc(${-100 * (index - site)}%), 0`,
+        transform: `translate(calc(${-100 * (index - site)}%), 0) rotate(${rotateVal}deg)`,
       }}
     >
       <img
         src={url ?? iconLoading}
         className={classnames(
           `${prefixCls}-image-item`,
-          { [`${prefixCls}-loading`]: loading },
+          { [`${prefixCls}-loading`]: !url },
           { [`${prefixCls}-trans`]: isTrans },
         )}
         style={Object.assign({}, imageSize, {
           transform: `translate(calc(-50% + ${
             scaleRate === 1 ? transInfo.x : index === site ? transInfo.x : 0
           }px), calc(-50% + ${index === site ? transInfo.y : 0}px)) scale(${
-            index === site ? scaleRate : 1
+            visible ? (index === site ? scaleRate : 1) : 0.5
           }`,
         })}
-        ref={ref}
       />
     </div>
   );

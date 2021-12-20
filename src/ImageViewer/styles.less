@@ -9,21 +9,36 @@
 .@{prefix-cls}-image-root {
   position: fixed;
   top: 0;
-  right: 0;
-  bottom: 0;
   left: 0;
-  z-index: 3000;
-  background: rgba(0, 0, 0, 0.7);
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  transition: all 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
+  .@{prefix-cls}-image-mask {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 3000;
+    background: rgba(0, 0, 0, 0.7);
+    transition: all 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
+  }
   .@{prefix-cls}-image-slide {
     position: absolute;
-    width: 100%;
-    height: 100%;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 3001;
     transition: all 0.2s linear;
     .@{prefix-cls}-image-item {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
+      transition: all 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
       &.@{prefix-cls}-loading {
         animation: myRotate 1s linear infinite;
       }
@@ -67,6 +82,18 @@
     z-index: 3001;
     display: flex;
     align-items: center;
+    .@{prefix-cls}-tools-rotate {
+      width: 25px;
+      height: 25px;
+      margin-right: 10px;
+      background-size: 100% 100%;
+      &.@{prefix-cls}-tools-rotate-l {
+        background-image: url(../assets/rotate_l.png);
+      }
+      &.@{prefix-cls}-tools-rotate-r {
+        background-image: url(../assets/rotate_r.png);
+      }
+    }
     .@{prefix-cls}-tools-btn {
       position: relative;
       width: 20px;
@@ -195,9 +222,9 @@
 
 @keyframes myRotate {
   0% {
-    transform: rotate(0deg);
+    transform: translate(-50%, -50%) rotate(0deg);
   }
   100% {
-    transform: rotate(360deg);
+    transform: translate(-50%, -50%) rotate(360deg);
   }
 }
