@@ -36,6 +36,7 @@ export default (props: ImageViewer) => {
   const refRotate = useRef<number>(0);
 
   const { visible = false, onClose = noon, index = 0, urls = [], onIndexChange = noon } = props;
+  const refUrlsLen = useRef<number>(urls.length);
 
   const [transInfo, setTransInfo] = useState<MoveInfo>(config.axis);
   const [scaleRate, setScaleRate] = useState<number>(config.scale);
@@ -50,6 +51,10 @@ export default (props: ImageViewer) => {
 
   const ablePrev = index > 0;
   const ableNext = index < urls.length - 1;
+
+  useEffect(() => {
+    refUrlsLen.current = urls.length;
+  }, [urls]);
 
   // 防止触摸穿透
   useEffect(() => {
@@ -89,6 +94,7 @@ export default (props: ImageViewer) => {
 
   // 监听移动事件
   useEffect(() => {
+    console.log('监测到urls变化');
     const at = new AnyTouch(refRoot.current);
     // 单击事件
     at.on('tap', (e) => {
@@ -117,10 +123,10 @@ export default (props: ImageViewer) => {
     });
     // 快速切换
     at.on('swipe', (e) => {
-      // console.log('swipe事件', e)
+      console.log('swipe事件', e);
       if (e.direction === 'left') {
         onIndexChange((val) => {
-          if (val < urls.length - 1) {
+          if (val < refUrlsLen.current - 1) {
             return val + 1;
           }
           return val;
@@ -137,7 +143,7 @@ export default (props: ImageViewer) => {
     });
     // 拖拽
     at.on('panmove', (e) => {
-      // console.log('pan事件', e.displacementX);
+      console.log('pan事件', e.displacementX);
       let endX = parseInt((refStart.current.x + e.displacementX).toFixed(0)),
         endY = parseInt((refStart.current.y + e.displacementY).toFixed(0));
       const item = { x: endX, y: endY };
@@ -146,7 +152,6 @@ export default (props: ImageViewer) => {
         const rate = (window.innerHeight - Math.abs(e.displacementY)) / window.innerHeight;
         setScaleRate(rate);
         refScale.current = rate;
-        console.log('rare', rate);
         setOpacity(rate * Math.pow(config.opacity, 2));
       }
       setTransInfo(item);
@@ -178,7 +183,7 @@ export default (props: ImageViewer) => {
       if (Math.abs(x) / window.innerWidth > config.slide && refScale.current === config.scale) {
         if (x <= 0) {
           onIndexChange((val: number) => {
-            if (val < urls.length - 1) {
+            if (val < refUrlsLen.current - 1) {
               return val + 1;
             }
             return val;

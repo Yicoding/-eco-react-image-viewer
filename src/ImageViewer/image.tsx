@@ -16,6 +16,13 @@ export default (props: ImageItem) => {
     width: 50,
     height: 50,
   });
+  const [isShow, setIsShow] = useState<boolean>(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsShow(visible);
+    }, 0);
+  }, [visible]);
 
   const rateInner = innerInfo.width / innerInfo.height;
   const rateImage = imageInfo.width / imageInfo.height;
@@ -35,6 +42,7 @@ export default (props: ImageItem) => {
   }, [rateImage, rateInner, innerInfo, imageInfo]);
 
   useEffect(() => {
+    setUrl('');
     const image = new Image();
     // 监听目标图片加载的情况，完成时再将DOM上的img节点的src属性设置为目标图片的url
     image.onload = () => {
@@ -46,11 +54,13 @@ export default (props: ImageItem) => {
     };
     // 设置src属性，Image实例开始加载图片
     image.src = src;
-  }, []);
+  }, [src]);
 
   return (
     <div
-      className={`${prefixCls}-image-slide`}
+      className={classnames(`${prefixCls}-image-slide`, {
+        [`${prefixCls}-image-slide-trans`]: isShow,
+      })}
       style={{
         transform: `translate(calc(${-100 * (index - site)}%), 0) rotate(${
           index === site ? rotateVal : 0
@@ -58,19 +68,23 @@ export default (props: ImageItem) => {
       }}
     >
       <img
-        src={url ?? iconLoading}
+        src={url || iconLoading}
         className={classnames(
           `${prefixCls}-image-item`,
           { [`${prefixCls}-loading`]: !url },
           { [`${prefixCls}-trans`]: isTrans },
         )}
-        style={Object.assign({}, imageSize, {
-          transform: `translate(calc(-50% + ${
-            scaleRate === 1 ? transInfo.x : index === site ? transInfo.x : 0
-          }px), calc(-50% + ${index === site ? transInfo.y : 0}px)) scale(${
-            visible ? (index === site ? scaleRate : 1) : 0.5
-          }`,
-        })}
+        style={Object.assign(
+          {},
+          imageSize,
+          url && {
+            transform: `translate(calc(-50% + ${
+              scaleRate === 1 ? transInfo.x : index === site ? transInfo.x : 0
+            }px), calc(-50% + ${index === site ? transInfo.y : 0}px)) scale(${
+              visible ? (index === site ? scaleRate : 1) : 0.5
+            }`,
+          },
+        )}
       />
     </div>
   );
