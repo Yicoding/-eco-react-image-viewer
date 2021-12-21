@@ -22,7 +22,6 @@
     bottom: 0;
     left: 0;
     z-index: 3000;
-    background: rgba(0, 0, 0, 0.7);
     transition: all 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
   }
   .@{prefix-cls}-image-slide {
@@ -38,12 +37,11 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      transition: all 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
       &.@{prefix-cls}-loading {
         animation: myRotate 1s linear infinite;
       }
       &.@{prefix-cls}-trans {
-        transition: all 0.2s linear;
+        transition: all 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
       }
     }
   }
@@ -62,11 +60,11 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 18px;
-      height: 10px;
+      width: 20px;
+      height: 12px;
       .@{prefix-cls}-point {
-        width: 8px;
-        height: 8px;
+        width: 12px;
+        height: 12px;
         background: #999;
         border-radius: 50%;
         &.@{prefix-cls}-point-on {
@@ -78,7 +76,7 @@
   .@{prefix-cls}-image-tools {
     position: fixed;
     top: 20px;
-    right: 50px;
+    right: 30px;
     z-index: 3001;
     display: flex;
     align-items: center;

@@ -24,6 +24,7 @@ const config = {
   mobileWidth: 420,
   show: { zIndex: 2000, opacity: 1 },
   hide: { zIndex: -1, opacity: 0 },
+  opacity: 0.8,
 };
 
 export default (props: ImageViewer) => {
@@ -32,12 +33,13 @@ export default (props: ImageViewer) => {
   const refTrans = useRef<any>(config.axis);
   const refStart = useRef<MoveInfo>(config.axis);
   const refTimer = useRef<any>();
+  const refRotate = useRef<number>(0);
 
-  const { visible = false, onClose = noon, index = 0, urls = [] } = props;
+  const { visible = false, onClose = noon, index = 0, urls = [], onIndexChange = noon } = props;
 
-  const [currentIndex, setCurrentIndex] = useState<number>(index);
   const [transInfo, setTransInfo] = useState<MoveInfo>(config.axis);
   const [scaleRate, setScaleRate] = useState<number>(config.scale);
+  const [opacity, setOpacity] = useState<number>(config.opacity);
   const [isPc, setIsPc] = useState<boolean>(false);
   const [isTrans, setIsTrans] = useState<boolean>(false);
   const [rotateVal, setRotateVal] = useState<number>(0);
@@ -46,8 +48,8 @@ export default (props: ImageViewer) => {
     height: 1,
   });
 
-  const ablePrev = currentIndex > 0;
-  const ableNext = currentIndex < urls.length - 1;
+  const ablePrev = index > 0;
+  const ableNext = index < urls.length - 1;
 
   // 防止触摸穿透
   useEffect(() => {
@@ -74,22 +76,28 @@ export default (props: ImageViewer) => {
     refScale.current = config.scale;
     onTrans();
     setRotateVal(0);
+    refRotate.current = 0;
+    setOpacity(config.opacity);
   };
+
+  // 切换图片时，重置图片缩放、旋转、偏移属性
+  useEffect(() => {
+    onReset();
+  }, [index]);
 
   // 监听移动事件
   useEffect(() => {
-    onReset();
     const at = new AnyTouch(refRoot.current);
     // 单击事件
     at.on('tap', (e) => {
-      console.log('tap事件', e);
+      // console.log('tap事件', e);
       const target = e.target as HTMLTextAreaElement;
       if (/point|tools/.test(target.className)) {
         return;
       }
       // 双击事件
       if (refTimer.current) {
-        console.log('双击');
+        // console.log('双击');
         clearTimeout(refTimer.current);
         refTimer.current = null;
         if (refScale.current === config.scale) {
@@ -105,28 +113,44 @@ export default (props: ImageViewer) => {
         refTimer.current = null;
       }, 200);
     });
+    // 快速切换
     at.on('swipe', (e) => {
       // console.log('swipe事件', e)
-      if (e.direction === 'left' && ableNext) {
-        setCurrentIndex(currentIndex + 1);
+      if (e.direction === 'left') {
+        onIndexChange((val) => {
+          if (val < urls.length - 1) {
+            return val + 1;
+          }
+          return val;
+        });
       }
-      if (e.direction === 'right' && ablePrev) {
-        setCurrentIndex(currentIndex - 1);
+      if (e.direction === 'right') {
+        onIndexChange((val) => {
+          if (val > 0) {
+            return val - 1;
+          }
+          return val;
+        });
       }
     });
+    // 拖拽
     at.on('panmove', (e) => {
       // console.log('pan事件', e.displacementX);
       let endX = parseInt((refStart.current.x + e.displacementX).toFixed(0)),
         endY = parseInt((refStart.current.y + e.displacementY).toFixed(0));
       const item = { x: endX, y: endY };
+      // 上下拖拽，缩小、淡出
       if (e.displacementY !== 0 && refScale.current <= 1) {
         const rate = (window.innerHeight - Math.abs(e.displacementY)) / window.innerHeight;
         setScaleRate(rate);
         refScale.current = rate;
+        console.log('rare', rate);
+        setOpacity(rate * Math.pow(config.opacity, 2));
       }
       setTransInfo(item);
       refTrans.current = item;
     });
+    // 拖拽结束
     at.on('panend', (e) => {
       // console.log('pan事件', e.x);
       const x = e.displacementX,
@@ -150,16 +174,27 @@ export default (props: ImageViewer) => {
         });
       }, 100);
       if (Math.abs(x) / window.innerWidth > config.slide && refScale.current === config.scale) {
-        if (x <= 0 && ableNext) {
-          setCurrentIndex(currentIndex + 1);
-        } else if (x > 0 && ablePrev) {
-          setCurrentIndex(currentIndex - 1);
+        if (x <= 0) {
+          onIndexChange((val: number) => {
+            if (val < urls.length - 1) {
+              return val + 1;
+            }
+            return val;
+          });
+        } else if (x > 0) {
+          onIndexChange((val: number) => {
+            if (val > 0) {
+              return val - 1;
+            }
+            return val;
+          });
         }
       }
       if (refScale.current === config.scale) {
         onReset();
       }
     });
+    // 缩放
     at.on('pinchmove', (e) => {
       console.log('pinch', e.deltaScale);
       if (e.scale > 1) {
@@ -176,6 +211,7 @@ export default (props: ImageViewer) => {
       }
       setScaleRate(refScale.current);
     });
+    // 缩放结束
     at.on('pinchend', () => {
       if (refScale.current < 1) {
         onReset();
@@ -184,8 +220,9 @@ export default (props: ImageViewer) => {
     return () => {
       at.destroy();
     };
-  }, [currentIndex]);
+  }, []);
 
+  // 判断屏幕尺寸
   const onChangeInner = () => {
     setInnerInfo({
       width: window.innerWidth,
@@ -208,12 +245,20 @@ export default (props: ImageViewer) => {
 
   // 左旋
   const rotateL = () => {
-    setRotateVal((val) => val - 90);
+    setRotateVal((val) => {
+      const m = val - 90;
+      refRotate.current = m;
+      return m;
+    });
   };
 
   // 右旋
   const rotateR = () => {
-    setRotateVal((val) => val + 90);
+    setRotateVal((val) => {
+      const m = val + 90;
+      refRotate.current = m;
+      return m;
+    });
   };
 
   // 放大
@@ -240,21 +285,23 @@ export default (props: ImageViewer) => {
       onReset();
     }
     if (rotateVal % 360 !== 0) {
-      setRotateVal(Math.round(rotateVal / 360) * 360);
+      const m = Math.round(rotateVal / 360) * 360;
+      refRotate.current = m;
+      setRotateVal(m);
     }
   };
 
   // 上一张
   const onPrev = () => {
     if (ablePrev) {
-      setCurrentIndex(currentIndex - 1);
+      onIndexChange(index - 1);
     }
   };
 
   // 下一张
   const onNext = () => {
     if (ableNext) {
-      setCurrentIndex(currentIndex + 1);
+      onIndexChange(index + 1);
     }
   };
 
@@ -264,14 +311,19 @@ export default (props: ImageViewer) => {
       className={`${prefixCls}-image-root`}
       style={visible ? config.show : config.hide}
     >
-      <div className={`${prefixCls}-image-mask`} style={visible ? config.show : config.hide} />
+      <div
+        className={`${prefixCls}-image-mask`}
+        style={Object.assign({}, visible ? config.show : config.hide, {
+          background: `rgba(0, 0, 0, ${opacity})`,
+        })}
+      />
       {urls.map((item, i) => {
         return (
           <Image
             visible={visible}
             key={i}
             src={item}
-            index={currentIndex}
+            index={index}
             site={i}
             transInfo={transInfo}
             scaleRate={scaleRate}
@@ -287,13 +339,13 @@ export default (props: ImageViewer) => {
             return (
               <div
                 className={`${prefixCls}-point-item`}
-                onMouseDown={() => setCurrentIndex(i)}
-                onTouchEnd={() => setCurrentIndex(i)}
+                onMouseDown={() => onIndexChange(i)}
+                onTouchEnd={() => onIndexChange(i)}
                 key={i}
               >
                 <span
                   className={classnames(`${prefixCls}-point`, {
-                    [`${prefixCls}-point-on`]: currentIndex === i,
+                    [`${prefixCls}-point-on`]: index === i,
                   })}
                 />
               </div>
@@ -301,19 +353,19 @@ export default (props: ImageViewer) => {
           })}
         </div>
       )}
-      {isPc && (
-        <>
-          <div className={`${prefixCls}-image-tools`}>
-            <div
-              className={`${prefixCls}-tools-rotate ${prefixCls}-tools-rotate-l`}
-              onMouseDown={rotateL}
-              onTouchEnd={rotateL}
-            />
-            <div
-              className={`${prefixCls}-tools-rotate ${prefixCls}-tools-rotate-r`}
-              onMouseDown={rotateR}
-              onTouchEnd={rotateR}
-            />
+      <div className={`${prefixCls}-image-tools`}>
+        <div
+          className={`${prefixCls}-tools-rotate ${prefixCls}-tools-rotate-l`}
+          onMouseDown={rotateL}
+          onTouchEnd={rotateL}
+        />
+        <div
+          className={`${prefixCls}-tools-rotate ${prefixCls}-tools-rotate-r`}
+          onMouseDown={rotateR}
+          onTouchEnd={rotateR}
+        />
+        {isPc && (
+          <>
             <span
               className={classnames(`${prefixCls}-tools-btn ${prefixCls}-tools-reduce`, {
                 [`${prefixCls}-tools-gray`]: scaleRate === config.minScale,
@@ -340,7 +392,11 @@ export default (props: ImageViewer) => {
               onMouseDown={onClose}
               onTouchEnd={onClose}
             />
-          </div>
+          </>
+        )}
+      </div>
+      {isPc && (
+        <>
           <div
             className={`${prefixCls}-tools-arrow-box ${prefixCls}-tools-left`}
             onMouseDown={onPrev}

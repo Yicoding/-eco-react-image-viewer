@@ -16,8 +16,12 @@ nav:
 ### npm 或 yarn 安装
 
 ```bash
-npm install eco-react-image-viewer
-# or
+yarn add eco-react-image-viewer
+```
+
+or
+
+```bash
 yarn add eco-react-image-viewer
 ```
 
@@ -26,8 +30,6 @@ yarn add eco-react-image-viewer
 ```ts
 import React, { useState } from 'react';
 import ImageViewer from 'eco-react-image-viewer';
-
-import s from './styles.less';
 
 import aLg from '../../fixtures/images/a-lg.png';
 import aMd from '../../fixtures/images/a-md.png';
@@ -38,15 +40,20 @@ import yMd from '../../fixtures/images/y-md.png';
 
 export default () => {
   const [visible, setVisible] = useState<boolean>(false);
+  const [index, setIndex] = useState<number>(0);
 
   const onClose = () => setVisible((val) => !val);
 
   return (
     <div>
-      <div className={s.btnPrimary} onClick={onClose}>
-        预览
-      </div>
-      <ImageViewer visible={visible} urls={[aLg, aMd, xLg, xMd, yLg, yMd]} onClose={onClose} />
+      <div onClick={onClose}>预览</div>
+      <ImageViewer
+        visible={visible}
+        urls={[aLg, aMd, xLg, xMd, yLg, yMd]}
+        onClose={onClose}
+        index={index}
+        onIndexChange={setIndex}
+      />
     </div>
   );
 };

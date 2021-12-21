@@ -1,8 +1,9 @@
 export declare type ImageViewer = {
-  visible: boolean;
   urls: string[];
-  onClose?: () => void;
-  index?: number;
+  visible: boolean;
+  onClose: () => void;
+  index: number;
+  onIndexChange: React.Dispatch<React.SetStateAction<number>>;
 };
 export declare type MoveInfo = {
   x: number;

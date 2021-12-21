@@ -12,6 +12,7 @@ import yMd from '../../fixtures/images/y-md.png';
 
 export default () => {
   const [visible, setVisible] = useState<boolean>(false);
+  const [index, setIndex] = useState<number>(0);
 
   const onClose = () => setVisible((val) => !val);
 
@@ -20,7 +21,13 @@ export default () => {
       <div className={s.btnPrimary} onClick={onClose}>
         预览
       </div>
-      <ImageViewer visible={visible} urls={[aLg, aMd, xLg, xMd, yLg, yMd]} onClose={onClose} />
+      <ImageViewer
+        visible={visible}
+        urls={[aLg, aMd, xLg, xMd, yLg, yMd]}
+        onClose={onClose}
+        index={index}
+        onIndexChange={setIndex}
+      />
     </div>
   );
 };
