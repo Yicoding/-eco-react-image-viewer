@@ -53,11 +53,13 @@ export default (props: ImageViewer) => {
 
   // 防止触摸穿透
   useEffect(() => {
-    document.body.classList.add(`${prefixCls}-fixed-body`);
+    if (visible) {
+      document.body.classList.add(`${prefixCls}-fixed-body`);
+    }
     return () => {
       document.body.classList.remove(`${prefixCls}-fixed-body`);
     };
-  }, []);
+  }, [visible]);
 
   // 图片过度效果
   const onTrans = () => {

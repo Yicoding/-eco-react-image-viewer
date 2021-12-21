@@ -54,6 +54,16 @@ export default () => {
 };
 ```
 
+### API
+
+| 属性          | 说明               | 类型                    | 默认值  |
+| :------------ | :----------------- | :---------------------- | :------ |
+| urls          | 图片数组           | `string[]`              | `[]`    |
+| visible       | 控制显示/隐藏      | `boolean`               | `false` |
+| onClose       | 关闭预览回调       | `() => void`            | -       |
+| index         | 当前展示图片的下标 | `number`                | `0`     |
+| onIndexChange | 图片切换回调       | `(val: number) => void` | -       |
+
 [npm]: https://img.shields.io/npm/v/eco-react-image-viewer.svg
 [npm-url]: https://www.npmjs.com/package/eco-react-image-viewer
 [site]: https://yicoding.github.io/eco-react-image-viewer
