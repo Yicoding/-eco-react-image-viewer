@@ -11,7 +11,7 @@
 ### npm 或 yarn 安装
 
 ```bash
-yarn add eco-react-image-viewer
+npm install eco-react-image-viewer --save
 ```
 
 or
