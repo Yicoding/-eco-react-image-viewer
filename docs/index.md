@@ -12,7 +12,7 @@ features:
     desc: 基于React封装
   - icon: https://gw.alipayobjects.com/zos/bmw-prod/d60657df-0822-4631-9d7c-e7a869c2f21c/k79dmz3q_w126_h126.png
     title: 功能丰富
-    desc: 兼容PC、移动端预览场景
+    desc: 支持单击、双击、拖拽、快速滑动、缩放、旋转功能
   - icon: https://gw.alipayobjects.com/zos/bmw-prod/d1ee0c6f-5aed-4a45-a507-339a4bfe076c/k7bjsocq_w144_h144.png
     title: TypeScript
     desc: 提供 TypeScript 类型定义
