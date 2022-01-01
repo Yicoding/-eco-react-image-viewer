@@ -11,7 +11,7 @@ const prefixCls = 'eco-image-viewer';
 export default (props: ImageItem) => {
   const { src, site, index, transInfo, scaleRate, innerInfo, isTrans, visible, rotateVal } = props;
 
-  const [url, setUrl] = useState<string>();
+  const [url, setUrl] = useState<string>('');
   const [imageInfo, setImageInfo] = useState<Info>({
     width: 50,
     height: 50,

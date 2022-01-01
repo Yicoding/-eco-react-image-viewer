@@ -25,36 +25,41 @@ const config = {
   show: { zIndex: 2000, opacity: 1 },
   hide: { zIndex: -1, opacity: 0 },
   opacity: 0.8,
+  rotate: 0,
 };
 
 export default (props: ImageViewer) => {
   const refRoot = useRef<any>();
-  const refScale = useRef<any>(config.scale);
-  const refTrans = useRef<any>(config.axis);
   const refStart = useRef<MoveInfo>(config.axis);
   const refTimer = useRef<any>();
-  const refRotate = useRef<number>(0);
 
   const { visible = false, onClose = noon, index = 0, urls = [], onIndexChange = noon } = props;
   const refUrlsLen = useRef<number>(urls.length);
 
   const [transInfo, setTransInfo] = useState<MoveInfo>(config.axis);
   const [scaleRate, setScaleRate] = useState<number>(config.scale);
+  const [rotateVal, setRotateVal] = useState<number>(config.rotate);
   const [opacity, setOpacity] = useState<number>(config.opacity);
   const [isPc, setIsPc] = useState<boolean>(false);
   const [isTrans, setIsTrans] = useState<boolean>(false);
-  const [rotateVal, setRotateVal] = useState<number>(0);
   const [innerInfo, setInnerInfo] = useState<Info>({
     width: 1,
     height: 1,
   });
+
+  const refTrans = useRef<any>(transInfo);
+  refTrans.current = transInfo;
+  const refScale = useRef<any>(scaleRate);
+  refScale.current = scaleRate;
+  const refRotate = useRef<number>(rotateVal);
+  refRotate.current = rotateVal;
 
   const ablePrev = index > 0;
   const ableNext = index < urls.length - 1;
 
   useEffect(() => {
     refUrlsLen.current = urls.length;
-  }, [urls]);
+  }, [urls.length]);
 
   // 防止触摸穿透
   useEffect(() => {
@@ -78,12 +83,9 @@ export default (props: ImageViewer) => {
   const onReset = () => {
     refStart.current = config.axis;
     setTransInfo(config.axis);
-    refTrans.current = config.axis;
     setScaleRate(config.scale);
-    refScale.current = config.scale;
     onTrans();
-    setRotateVal(0);
-    refRotate.current = 0;
+    setRotateVal(config.rotate);
     setOpacity(config.opacity);
   };
 
@@ -151,11 +153,9 @@ export default (props: ImageViewer) => {
       if (e.displacementY !== 0 && refScale.current <= 1) {
         const rate = (window.innerHeight - Math.abs(e.displacementY)) / window.innerHeight;
         setScaleRate(rate);
-        refScale.current = rate;
         setOpacity(rate * Math.pow(config.opacity, 2));
       }
       setTransInfo(item);
-      refTrans.current = item;
     });
     // 拖拽结束
     at.on('panend', (e) => {
